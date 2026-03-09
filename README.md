@@ -1,73 +1,44 @@
-# React + TypeScript + Vite
+# PokéTeam – FireRed / LeafGreen Team Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web app for planning Pokémon teams for **FireRed & LeafGreen**. Build your team, assign moves, analyze type coverage, and check matchups against opponents — all in the browser, no backend required.
 
-Currently, two official plugins are available:
+**Live:** https://nyocon.github.io/pokemon-team-builder/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Team Builder** — 6 slots, each with a Pokémon picker and 4 move slots
+- **Type Effectiveness** — per-move effectiveness chart (2×, ½×, 0×), collapsible
+- **STAB indicator** — highlights moves that match the Pokémon's type
+- **Opponent Analysis** — pick a 7th defender Pokémon and see which team moves hit super effectively, sorted by effective damage
+- **Pokémon Box** — save pre-configured Pokémon (with moves) independently and assign them to any team slot
+- **Team Manager** — save, load, and delete named teams; share via URL
+- **5 languages** — EN, DE, FR, IT, ES
+- **Light / Dark mode**
+- **Offline-capable** — all data cached in localStorage after first load
 
-## Expanding the ESLint configuration
+## Scope
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+FireRed / LeafGreen only: Gen 1 Pokémon (#001–#151), moves from the Gen 1–3 era. Data sourced from [PokéAPI](https://pokeapi.co/).
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- [Vite](https://vite.dev/) + [React](https://react.dev/) + TypeScript
+- [Zustand](https://zustand.docs.pmnd.rs/) (state + localStorage persistence)
+- [TailwindCSS v4](https://tailwindcss.com/)
+- PokéAPI (client-side only, no backend)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Local Development
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## URL Parameters
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Parameter | Effect |
+|-----------|--------|
+| `?team=…` | Load a shared team directly |
+| `?clear`  | Wipe all localStorage cache |
