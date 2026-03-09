@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { PokemonPicker } from './PokemonPicker'
 import { MoveSlot } from './MoveSlot'
 import { TypeBadge } from './TypeBadge'
@@ -12,9 +12,11 @@ interface Props {
 
 export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
   const setSlot = useTeamStore(s => s.setSlot)
+  const addToRoster = useTeamStore(s => s.addToRoster)
   const slot = useTeamStore(s => s.activeTeam.slots[slotIndex])
   const language = useTeamStore(s => s.language)
   const pokemonList = useCacheStore(s => s.pokemonList)
+  const [savedToBox, setSavedToBox] = useState(false)
 
   const pokemon = slot.pokemonId ? pokemonList.find(p => p.id === slot.pokemonId) : null
 
@@ -67,6 +69,26 @@ export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
               moveId={slot.moveIds[mi]}
             />
           ))}
+          <button
+            onClick={() => {
+              addToRoster({ label: '', pokemonId: pokemon.id, moveIds: [...slot.moveIds] })
+              setSavedToBox(true)
+              setTimeout(() => setSavedToBox(false), 1500)
+            }}
+            style={{
+              marginTop: 2,
+              padding: '4px 0',
+              background: savedToBox ? 'rgba(167,139,250,0.15)' : 'rgba(167,139,250,0.06)',
+              border: savedToBox ? '1px solid rgba(167,139,250,0.4)' : '1px solid rgba(167,139,250,0.2)',
+              borderRadius: 2,
+              color: '#a78bfa',
+              fontSize: 10, fontWeight: 600,
+              cursor: 'pointer',
+              letterSpacing: '0.05em',
+            }}
+          >
+            {savedToBox ? '✓ Box' : t('saveToRoster', language)}
+          </button>
         </div>
       )}
 

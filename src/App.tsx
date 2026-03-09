@@ -4,6 +4,7 @@ import { Header } from './components/Layout/Header'
 import { TeamBuilder } from './components/TeamBuilder/TeamBuilder'
 import { DefenderPanel } from './components/Defender/DefenderPanel'
 import { TeamList } from './components/TeamManager/TeamList'
+import { RosterPanel } from './components/Roster/RosterPanel'
 import { useCacheStore } from './store/cacheStore'
 import { useTeamStore } from './store/teamStore'
 import { fetchAllPokemon, fetchAllTypes, fetchAllMoveIds, fetchMoveDetail } from './api/queries'
@@ -79,8 +80,9 @@ function App() {
           <TeamBuilder />
           <DefenderPanel />
         </div>
-        <div style={{ position: 'sticky', top: 76 }}>
+        <div style={{ position: 'sticky', top: 76, display: 'flex', flexDirection: 'column', gap: 20 }}>
           <TeamList />
+          <RosterPanel />
         </div>
       </main>
       <footer style={{
