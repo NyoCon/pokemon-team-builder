@@ -15,6 +15,7 @@ function App() {
   const setActiveTeam = useTeamStore(s => s.setActiveTeam)
   const activeTeam = useTeamStore(s => s.activeTeam)
   const teams = useTeamStore(s => s.teams)
+  const roster = useTeamStore(s => s.roster)
   const theme = useTeamStore(s => s.theme)
   const language = useTeamStore(s => s.language)
 
@@ -35,11 +36,12 @@ function App() {
     const teamFromUrl = readTeamFromUrl()
     if (teamFromUrl) setActiveTeam(teamFromUrl)
 
-    // Collect all move IDs referenced in persisted teams + activeTeam
+    // Collect all move IDs referenced in persisted teams + activeTeam + roster
     const allTeams = [activeTeam, ...Object.values(teams)]
-    const persistedMoveIds = [...new Set(
-      allTeams.flatMap(team => team.slots.flatMap(slot => slot.moveIds.filter(Boolean) as number[]))
-    )]
+    const persistedMoveIds = [...new Set([
+      ...allTeams.flatMap(team => team.slots.flatMap(slot => slot.moveIds.filter(Boolean) as number[])),
+      ...roster.flatMap(entry => entry.moveIds.filter(Boolean) as number[]),
+    ])]
 
     setLoading(true)
     Promise.all([fetchAllPokemon(), fetchAllTypes(), fetchAllMoveIds()])
