@@ -19,13 +19,12 @@ export const DefenderPanel: React.FC = () => {
 
   const defender = defenderPokemonId ? pokemonList.find(p => p.id === defenderPokemonId) : null
 
-  // For each team slot, find moves that are super effective against defender
   const teamMatchups = defender
     ? activeTeam.slots.map((slot, i) => {
         const pokemon = slot.pokemonId ? pokemonList.find(p => p.id === slot.pokemonId) : null
         if (!pokemon) return null
 
-        const effectiveMoves = slot.moveIds
+        const allMoves = slot.moveIds
           .filter(Boolean)
           .map(mid => moveCache[mid!])
           .filter(Boolean)
@@ -34,15 +33,21 @@ export const DefenderPanel: React.FC = () => {
             const stab = isSTAB(move.type, pokemon.types)
             return { move, mult, stab }
           })
+
+        const superEffective = allMoves
           .filter(m => m.mult > 1)
           .sort((a, b) => {
             const dmgA = (a.move.power ?? 0) * a.mult
             const dmgB = (b.move.power ?? 0) * b.mult
-            if (dmgB !== dmgA) return dmgB - dmgA
-            return b.mult - a.mult
+            return dmgB !== dmgA ? dmgB - dmgA : b.mult - a.mult
           })
 
-        return { pokemon, moves: effectiveMoves, slotIndex: i }
+        const resisted = allMoves
+          .filter(m => m.mult < 1)
+          .sort((a, b) => a.mult - b.mult)
+
+        if (!superEffective.length && !resisted.length) return null
+        return { pokemon, superEffective, resisted, slotIndex: i }
       }).filter(Boolean)
     : []
 
@@ -89,90 +94,58 @@ export const DefenderPanel: React.FC = () => {
       {defender && Object.keys(typeChart).length > 0 && (
         <div>
           {teamMatchups.length === 0 ? (
-            <div style={{
-              padding: '16px 0',
-              textAlign: 'center',
-              color: 'var(--text-muted)',
-              fontSize: 12,
-            }}>
+            <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: 12 }}>
               {t('noSuperEffective', language)}
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {teamMatchups.map(m => {
                 if (!m) return null
-                const { pokemon, moves, slotIndex } = m
+                const { pokemon, superEffective, resisted, slotIndex } = m
                 const name = pokemon.names[language] || pokemon.names.en
+
+                const renderMoveRow = ({ move, mult, stab }: typeof superEffective[0], isGood: boolean) => {
+                  const moveName = move.names[language] || move.names.en
+                  const isX4 = mult >= 4
+                  const isImmune = mult === 0
+                  const bg = isGood
+                    ? isX4 ? 'rgba(74,222,128,0.08)' : 'rgba(74,222,128,0.04)'
+                    : isImmune ? 'rgba(100,100,100,0.08)' : 'rgba(249,115,22,0.06)'
+                  const borderColor = isGood
+                    ? isX4 ? 'rgba(74,222,128,0.3)' : 'rgba(74,222,128,0.12)'
+                    : isImmune ? 'rgba(100,100,100,0.2)' : 'rgba(249,115,22,0.2)'
+                  const multColor = isGood ? '#4ade80' : isImmune ? '#6b7280' : '#f97316'
+
+                  return (
+                    <div key={move.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 6px', background: bg, border: `1px solid ${borderColor}`, borderRadius: 2 }}>
+                      <TypeBadge typeName={move.type} small />
+                      <span style={{ flex: 1, fontSize: 13, color: 'var(--text-primary)' }}>{moveName}</span>
+                      {stab && (
+                        <span style={{ color: '#ffb347', fontSize: 10, fontWeight: 700, border: '1px solid rgba(255,179,71,0.4)', padding: '0 3px', borderRadius: 2 }}>STAB</span>
+                      )}
+                      {move.power != null && (
+                        <span style={{ color: 'var(--text-muted)', fontSize: 12, fontFamily: "'Share Tech Mono', monospace" }}>{move.power}</span>
+                      )}
+                      <span style={{ color: multColor, fontSize: 13, fontWeight: 700, fontFamily: "'Share Tech Mono', monospace" }}>{mult}×</span>
+                    </div>
+                  )
+                }
+
                 return (
-                  <div
-                    key={slotIndex}
-                    style={{
-                      background: 'var(--bg-card2)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 3,
-                      padding: '8px 10px',
-                    }}
-                  >
+                  <div key={slotIndex} style={{ background: 'var(--bg-card2)', border: '1px solid var(--border)', borderRadius: 3, padding: '8px 10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                       <img src={pokemon.spriteUrl} alt="" style={{ width: 28, height: 28, imageRendering: 'pixelated' }} />
                       <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
                       <div style={{ display: 'flex', gap: 3 }}>
-                        {pokemon.types.map(t => <TypeBadge key={t} typeName={t} small />)}
+                        {pokemon.types.map(tp => <TypeBadge key={tp} typeName={tp} small />)}
                       </div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      {moves.map(({ move, mult, stab }) => {
-                        const moveName = move.names[language] || move.names.en
-                        const isX4 = mult >= 4
-                        return (
-                          <div
-                            key={move.id}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              padding: '3px 6px',
-                              background: isX4
-                                ? 'rgba(74,222,128,0.08)'
-                                : 'rgba(74,222,128,0.04)',
-                              border: isX4
-                                ? '1px solid rgba(74,222,128,0.3)'
-                                : '1px solid rgba(74,222,128,0.12)',
-                              borderRadius: 2,
-                            }}
-                          >
-                            <TypeBadge typeName={move.type} small />
-                            <span style={{ flex: 1, fontSize: 13, color: 'var(--text-primary)' }}>{moveName}</span>
-                            {stab && (
-                              <span style={{
-                                color: '#ffb347',
-                                fontSize: 10,
-                                fontWeight: 700,
-                                border: '1px solid rgba(255,179,71,0.4)',
-                                padding: '0 3px',
-                                borderRadius: 2,
-                              }}>STAB</span>
-                            )}
-                            {move.power != null && (
-                              <span style={{
-                                color: 'var(--text-muted)',
-                                fontSize: 12,
-                                fontFamily: "'Share Tech Mono', monospace",
-                              }}>
-                                {move.power}
-                              </span>
-                            )}
-                            <span style={{
-                              color: '#4ade80',
-                              fontSize: 13,
-                              fontWeight: 700,
-                              fontFamily: "'Share Tech Mono', monospace",
-                            }}>
-                              {mult}×
-                            </span>
-                          </div>
-                        )
-                      })}
+                      {superEffective.map(entry => renderMoveRow(entry, true))}
+                      {resisted.length > 0 && superEffective.length > 0 && (
+                        <div style={{ borderTop: '1px solid var(--border)', margin: '3px 0' }} />
+                      )}
+                      {resisted.map(entry => renderMoveRow(entry, false))}
                     </div>
                   </div>
                 )
