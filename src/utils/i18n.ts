@@ -35,6 +35,17 @@ const translations = {
   noSavedTeams:       { en: 'No saved teams', de: 'Keine gespeicherten Teams', fr: 'Aucune équipe sauvegardée', it: 'Nessuna squadra salvata', es: 'No hay equipos guardados' },
   load:               { en: 'Load', de: 'Laden', fr: 'Charger', it: 'Carica', es: 'Cargar' },
 
+  // Roster
+  roster:             { en: 'Pokémon Box', de: 'Pokémon-Box', fr: 'Boîte Pokémon', it: 'Box Pokémon', es: 'Caja Pokémon' },
+  addToRoster:        { en: 'Save to Box', de: 'In Box speichern', fr: 'Sauver dans la boîte', it: 'Salva nel box', es: 'Guardar en caja' },
+  saveToRoster:       { en: '+ Box', de: '+ Box', fr: '+ Boîte', it: '+ Box', es: '+ Caja' },
+  rosterLabelPlaceholder: { en: 'Label (optional)...', de: 'Bezeichnung (optional)...', fr: 'Étiquette (optionnelle)...', it: 'Etichetta (opzionale)...', es: 'Etiqueta (opcional)...' },
+  assignToSlot:       { en: 'Assign to slot', de: 'Slot zuweisen', fr: 'Assigner au slot', it: 'Assegna allo slot', es: 'Asignar al slot' },
+  noRosterEntries:    { en: 'Box is empty', de: 'Box ist leer', fr: 'Boîte vide', it: 'Box vuoto', es: 'Caja vacía' },
+  editEntry:          { en: 'Edit', de: 'Bearb.', fr: 'Modifier', it: 'Modifica', es: 'Editar' },
+  cancelEdit:         { en: 'Cancel', de: 'Abbrechen', fr: 'Annuler', it: 'Annulla', es: 'Cancelar' },
+  confirmAssign:      { en: 'Assign to which slot?', de: 'In welchen Slot?', fr: 'Quel slot?', it: 'Quale slot?', es: '¿Qué slot?' },
+
   // Footer
   dataSource:         { en: 'Data: PokéAPI · FireRed / LeafGreen', de: 'Daten: PokéAPI · Feuerrot / Blattgrün', fr: 'Données: PokéAPI · Rouge Feu / Vert Feuille', it: 'Dati: PokéAPI · Rosso Fuoco / Verde Foglia', es: 'Datos: PokéAPI · Rojo Fuego / Verde Hoja' },
 } satisfies Record<string, Record<Lang, string>>

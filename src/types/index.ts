@@ -67,3 +67,10 @@ export const EMPTY_TEAM: Team = {
 }
 
 export type EffectivenessMultiplier = 0 | 0.25 | 0.5 | 1 | 2 | 4
+
+export interface RosterEntry {
+  id: string
+  label: string
+  pokemonId: number
+  moveIds: [number | null, number | null, number | null, number | null]
+}

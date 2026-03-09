@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Team, TeamSlot, Lang } from '../types'
+import type { Team, TeamSlot, Lang, RosterEntry } from '../types'
 
 function makeEmptyTeam(): Team {
   return {
@@ -21,6 +21,7 @@ interface TeamStore {
   language: Lang
   theme: 'dark' | 'light'
   defenderPokemonId: number | null
+  roster: RosterEntry[]
 
   setSlot: (index: number, pokemonId: number | null) => void
   setMove: (slotIndex: number, moveIndex: number, moveId: number | null) => void
@@ -32,6 +33,10 @@ interface TeamStore {
   setDefender: (pokemonId: number | null) => void
   setActiveTeam: (team: Team) => void
   resetActiveTeam: () => void
+  addToRoster: (entry: Omit<RosterEntry, 'id'>) => void
+  updateRosterEntry: (id: string, patch: Partial<Omit<RosterEntry, 'id'>>) => void
+  removeFromRoster: (id: string) => void
+  assignFromRoster: (entryId: string, slotIndex: number) => void
 }
 
 export const useTeamStore = create<TeamStore>()(
@@ -42,6 +47,7 @@ export const useTeamStore = create<TeamStore>()(
       language: 'en',
       theme: 'dark',
       defenderPokemonId: null,
+      roster: [],
 
       setSlot: (index, pokemonId) =>
         set(s => {
@@ -85,6 +91,28 @@ export const useTeamStore = create<TeamStore>()(
       setDefender: (defenderPokemonId) => set({ defenderPokemonId }),
       setActiveTeam: (activeTeam) => set({ activeTeam }),
       resetActiveTeam: () => set({ activeTeam: makeEmptyTeam() }),
+
+      addToRoster: (entry) =>
+        set(s => ({
+          roster: [...s.roster, { ...entry, id: crypto.randomUUID() }],
+        })),
+
+      updateRosterEntry: (id, patch) =>
+        set(s => ({
+          roster: s.roster.map(e => e.id === id ? { ...e, ...patch } : e),
+        })),
+
+      removeFromRoster: (id) =>
+        set(s => ({ roster: s.roster.filter(e => e.id !== id) })),
+
+      assignFromRoster: (entryId, slotIndex) =>
+        set(s => {
+          const entry = s.roster.find(e => e.id === entryId)
+          if (!entry) return {}
+          const slots = [...s.activeTeam.slots] as Team['slots']
+          slots[slotIndex] = { pokemonId: entry.pokemonId, moveIds: [...entry.moveIds] as TeamSlot['moveIds'] }
+          return { activeTeam: { slots } }
+        }),
     }),
     {
       name: 'pokemon-team-builder',
@@ -93,6 +121,7 @@ export const useTeamStore = create<TeamStore>()(
         teams: state.teams,
         language: state.language,
         theme: state.theme,
+        roster: state.roster,
       }),
     }
   )

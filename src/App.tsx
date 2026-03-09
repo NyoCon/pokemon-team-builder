@@ -4,6 +4,7 @@ import { Header } from './components/Layout/Header'
 import { TeamBuilder } from './components/TeamBuilder/TeamBuilder'
 import { DefenderPanel } from './components/Defender/DefenderPanel'
 import { TeamList } from './components/TeamManager/TeamList'
+import { RosterPanel } from './components/Roster/RosterPanel'
 import { useCacheStore } from './store/cacheStore'
 import { useTeamStore } from './store/teamStore'
 import { fetchAllPokemon, fetchAllTypes, fetchAllMoveIds, fetchMoveDetail } from './api/queries'
@@ -14,6 +15,7 @@ function App() {
   const setActiveTeam = useTeamStore(s => s.setActiveTeam)
   const activeTeam = useTeamStore(s => s.activeTeam)
   const teams = useTeamStore(s => s.teams)
+  const roster = useTeamStore(s => s.roster)
   const theme = useTeamStore(s => s.theme)
   const language = useTeamStore(s => s.language)
 
@@ -34,11 +36,12 @@ function App() {
     const teamFromUrl = readTeamFromUrl()
     if (teamFromUrl) setActiveTeam(teamFromUrl)
 
-    // Collect all move IDs referenced in persisted teams + activeTeam
+    // Collect all move IDs referenced in persisted teams + activeTeam + roster
     const allTeams = [activeTeam, ...Object.values(teams)]
-    const persistedMoveIds = [...new Set(
-      allTeams.flatMap(team => team.slots.flatMap(slot => slot.moveIds.filter(Boolean) as number[]))
-    )]
+    const persistedMoveIds = [...new Set([
+      ...allTeams.flatMap(team => team.slots.flatMap(slot => slot.moveIds.filter(Boolean) as number[])),
+      ...roster.flatMap(entry => entry.moveIds.filter(Boolean) as number[]),
+    ])]
 
     setLoading(true)
     Promise.all([fetchAllPokemon(), fetchAllTypes(), fetchAllMoveIds()])
@@ -79,8 +82,9 @@ function App() {
           <TeamBuilder />
           <DefenderPanel />
         </div>
-        <div style={{ position: 'sticky', top: 76 }}>
+        <div style={{ position: 'sticky', top: 76, display: 'flex', flexDirection: 'column', gap: 20 }}>
           <TeamList />
+          <RosterPanel />
         </div>
       </main>
       <footer style={{
