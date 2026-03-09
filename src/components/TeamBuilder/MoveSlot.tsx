@@ -1,0 +1,76 @@
+import React from 'react'
+import { MovePicker } from './MovePicker'
+import { EffectivenessChart } from './EffectivenessChart'
+import { useCacheStore } from '../../store/cacheStore'
+import { useTeamStore } from '../../store/teamStore'
+import { isSTAB } from '../../utils/stab'
+
+interface Props {
+  slotIndex: number
+  moveIndex: number
+  pokemonTypes: string[]
+  moveId: number | null
+}
+
+export const MoveSlot: React.FC<Props> = ({ slotIndex, moveIndex, pokemonTypes, moveId }) => {
+  const setMove = useTeamStore(s => s.setMove)
+  const moveCache = useCacheStore(s => s.moveCache)
+  const move = moveId ? moveCache[moveId] : null
+
+  const hasStab = move ? isSTAB(move.type, pokemonTypes) : false
+
+  return (
+    <div style={{
+      background: 'var(--bg-deep)',
+      border: '1px solid var(--border)',
+      borderRadius: 3,
+      padding: '6px 8px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: move ? 4 : 0 }}>
+        <span style={{
+          color: 'var(--text-muted)',
+          fontSize: 9,
+          fontWeight: 700,
+          fontFamily: "'Share Tech Mono', monospace",
+          minWidth: 14,
+        }}>
+          {moveIndex + 1}
+        </span>
+        <div style={{ flex: 1 }}>
+          <MovePicker
+            value={moveId}
+            onChange={id => setMove(slotIndex, moveIndex, id)}
+          />
+        </div>
+        {move && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+            {hasStab && (
+              <span style={{
+                background: 'rgba(255,179,71,0.15)',
+                border: '1px solid rgba(255,179,71,0.4)',
+                color: '#ffb347',
+                fontSize: 8,
+                fontWeight: 700,
+                padding: '1px 4px',
+                borderRadius: 2,
+                letterSpacing: '0.08em',
+              }}>
+                STAB
+              </span>
+            )}
+            {move.power && (
+              <span style={{
+                color: 'var(--text-muted)',
+                fontSize: 9,
+                fontFamily: "'Share Tech Mono', monospace",
+              }}>
+                {move.power}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+      {move && <EffectivenessChart moveType={move.type} />}
+    </div>
+  )
+}

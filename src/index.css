@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --bg-deep: #070a0f;
+  --bg-base: #0d1117;
+  --bg-card: #111820;
+  --bg-card2: #161e28;
+  --bg-hover: #1c2633;
+  --border: #1e2d3d;
+  --border-bright: #2a3f55;
+  --text-primary: #e8f0f8;
+  --text-secondary: #7a99b8;
+  --text-muted: #3d5570;
+  --accent: #00bfff;
+  --accent-glow: rgba(0, 191, 255, 0.15);
+  --danger: #ff4d6d;
+  --success: #39d98a;
+  --warn: #ffb347;
+}
+
+html.light {
+  --bg-deep: #f0f4f8;
+  --bg-base: #e8edf3;
+  --bg-card: #ffffff;
+  --bg-card2: #f5f8fc;
+  --bg-hover: #eaf0f7;
+  --border: #d0dae6;
+  --border-bright: #b0bfce;
+  --text-primary: #1a2533;
+  --text-secondary: #4a6480;
+  --text-muted: #8da3b8;
+  --accent: #0077bb;
+  --accent-glow: rgba(0, 119, 187, 0.12);
+  --danger: #d63050;
+  --success: #1ea86a;
+  --warn: #d48000;
+}
+
+html.light body::before {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0, 120, 200, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 80, 160, 0.03) 0%, transparent 60%);
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Exo 2', sans-serif;
+  min-height: 100vh;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-bright) var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0, 100, 160, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 50, 100, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root { position: relative; z-index: 1; }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px var(--accent-glow); }
+  50% { box-shadow: 0 0 16px rgba(0,191,255,0.3); }
+}
+
+.animate-fade-in { animation: fadeInUp 0.25s ease forwards; }
+
+input, select, textarea {
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: 'Exo 2', sans-serif;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+button { font-family: 'Exo 2', sans-serif; cursor: pointer; transition: all 0.15s; }

@@ -1,0 +1,99 @@
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { Team, TeamSlot, Lang } from '../types'
+
+function makeEmptyTeam(): Team {
+  return {
+    slots: [
+      { pokemonId: null, moveIds: [null, null, null, null] },
+      { pokemonId: null, moveIds: [null, null, null, null] },
+      { pokemonId: null, moveIds: [null, null, null, null] },
+      { pokemonId: null, moveIds: [null, null, null, null] },
+      { pokemonId: null, moveIds: [null, null, null, null] },
+      { pokemonId: null, moveIds: [null, null, null, null] },
+    ],
+  }
+}
+
+interface TeamStore {
+  activeTeam: Team
+  teams: Record<string, Team>
+  language: Lang
+  theme: 'dark' | 'light'
+  defenderPokemonId: number | null
+
+  setSlot: (index: number, pokemonId: number | null) => void
+  setMove: (slotIndex: number, moveIndex: number, moveId: number | null) => void
+  saveTeam: (name: string) => void
+  loadTeam: (name: string) => void
+  deleteTeam: (name: string) => void
+  setLanguage: (lang: Lang) => void
+  setTheme: (theme: 'dark' | 'light') => void
+  setDefender: (pokemonId: number | null) => void
+  setActiveTeam: (team: Team) => void
+  resetActiveTeam: () => void
+}
+
+export const useTeamStore = create<TeamStore>()(
+  persist(
+    (set) => ({
+      activeTeam: makeEmptyTeam(),
+      teams: {},
+      language: 'en',
+      theme: 'dark',
+      defenderPokemonId: null,
+
+      setSlot: (index, pokemonId) =>
+        set(s => {
+          const slots = [...s.activeTeam.slots] as Team['slots']
+          slots[index] = { pokemonId, moveIds: [null, null, null, null] }
+          return { activeTeam: { slots } }
+        }),
+
+      setMove: (slotIndex, moveIndex, moveId) =>
+        set(s => {
+          const slots = s.activeTeam.slots.map((slot, i) => {
+            if (i !== slotIndex) return slot
+            const moveIds = [...slot.moveIds] as TeamSlot['moveIds']
+            moveIds[moveIndex] = moveId
+            return { ...slot, moveIds }
+          }) as Team['slots']
+          return { activeTeam: { slots } }
+        }),
+
+      saveTeam: (name) =>
+        set(s => ({
+          teams: { ...s.teams, [name]: s.activeTeam },
+        })),
+
+      loadTeam: (name) =>
+        set(s => {
+          const team = s.teams[name]
+          if (!team) return {}
+          return { activeTeam: team }
+        }),
+
+      deleteTeam: (name) =>
+        set(s => {
+          const teams = { ...s.teams }
+          delete teams[name]
+          return { teams }
+        }),
+
+      setLanguage: (language) => set({ language }),
+      setTheme: (theme) => set({ theme }),
+      setDefender: (defenderPokemonId) => set({ defenderPokemonId }),
+      setActiveTeam: (activeTeam) => set({ activeTeam }),
+      resetActiveTeam: () => set({ activeTeam: makeEmptyTeam() }),
+    }),
+    {
+      name: 'pokemon-team-builder',
+      partialize: (state) => ({
+        activeTeam: state.activeTeam,
+        teams: state.teams,
+        language: state.language,
+        theme: state.theme,
+      }),
+    }
+  )
+)
