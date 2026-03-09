@@ -27,7 +27,7 @@ export const DefenderPanel: React.FC = () => {
         const allMoves = slot.moveIds
           .filter(Boolean)
           .map(mid => moveCache[mid!])
-          .filter(Boolean)
+          .filter(m => m && m.power != null)
           .map(move => {
             const mult = calcDefenderEffectiveness(move.type, defender.types, typeChart)
             const stab = isSTAB(move.type, pokemon.types)
