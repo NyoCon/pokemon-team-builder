@@ -13,6 +13,7 @@ interface Props {
 export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -61,6 +62,10 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
   }, [])
 
   function handleOpen() {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      setDropdownPos({ top: rect.bottom + 2, left: rect.left, width: rect.width })
+    }
     setOpen(true)
     setSearch('')
     setTimeout(() => inputRef.current?.focus(), 50)
@@ -100,18 +105,18 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
         )}
       </button>
 
-      {open && (
+      {open && dropdownPos && (
         <div
           className="animate-fade-in"
           style={{
-            position: 'absolute',
-            top: 'calc(100% + 2px)',
-            left: 0,
-            right: 0,
+            position: 'fixed',
+            top: dropdownPos.top,
+            left: dropdownPos.left,
+            width: dropdownPos.width,
             background: 'var(--bg-card)',
             border: '1px solid var(--border-bright)',
             borderRadius: 3,
-            zIndex: 200,
+            zIndex: 1000,
             maxHeight: 260,
             display: 'flex',
             flexDirection: 'column',

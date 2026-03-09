@@ -13,6 +13,7 @@ interface Props {
 export const PokemonPicker: React.FC<Props> = ({ value, onChange, placeholderKey = 'choosePokemon' }) => {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null)
   const pokemonList = useCacheStore(s => s.pokemonList)
   const language = useTeamStore(s => s.language)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -38,6 +39,10 @@ export const PokemonPicker: React.FC<Props> = ({ value, onChange, placeholderKey
   }, [])
 
   function handleOpen() {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      setDropdownPos({ top: rect.bottom + 4, left: rect.left, width: rect.width })
+    }
     setOpen(true)
     setSearch('')
     setTimeout(() => inputRef.current?.focus(), 50)
@@ -93,18 +98,18 @@ export const PokemonPicker: React.FC<Props> = ({ value, onChange, placeholderKey
         <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>{open ? '▲' : '▼'}</span>
       </button>
 
-      {open && (
+      {open && dropdownPos && (
         <div
           className="animate-fade-in"
           style={{
-            position: 'absolute',
-            top: 'calc(100% + 4px)',
-            left: 0,
-            right: 0,
+            position: 'fixed',
+            top: dropdownPos.top,
+            left: dropdownPos.left,
+            width: dropdownPos.width,
             background: 'var(--bg-card)',
             border: '1px solid var(--border-bright)',
             borderRadius: 3,
-            zIndex: 100,
+            zIndex: 1000,
             maxHeight: 300,
             display: 'flex',
             flexDirection: 'column',
