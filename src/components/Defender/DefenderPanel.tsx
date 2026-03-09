@@ -35,7 +35,12 @@ export const DefenderPanel: React.FC = () => {
             return { move, mult, stab }
           })
           .filter(m => m.mult > 1)
-          .sort((a, b) => b.mult - a.mult)
+          .sort((a, b) => {
+            const dmgA = (a.move.power ?? 0) * a.mult
+            const dmgB = (b.move.power ?? 0) * b.mult
+            if (dmgB !== dmgA) return dmgB - dmgA
+            return b.mult - a.mult
+          })
 
         return { pokemon, moves: effectiveMoves, slotIndex: i }
       }).filter(Boolean)
@@ -147,6 +152,15 @@ export const DefenderPanel: React.FC = () => {
                                 padding: '0 3px',
                                 borderRadius: 2,
                               }}>STAB</span>
+                            )}
+                            {move.power != null && (
+                              <span style={{
+                                color: 'var(--text-muted)',
+                                fontSize: 10,
+                                fontFamily: "'Share Tech Mono', monospace",
+                              }}>
+                                {move.power}
+                              </span>
                             )}
                             <span style={{
                               color: '#4ade80',
