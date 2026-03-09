@@ -43,7 +43,7 @@ export const DefenderPanel: React.FC = () => {
           })
 
         const resisted = allMoves
-          .filter(m => m.mult < 1)
+          .filter(m => m.mult > 0 && m.mult < 1)
           .sort((a, b) => a.mult - b.mult)
 
         if (!superEffective.length && !resisted.length) return null
