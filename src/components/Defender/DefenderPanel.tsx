@@ -114,8 +114,8 @@ export const DefenderPanel: React.FC = () => {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                      <img src={pokemon.spriteUrl} alt="" style={{ width: 24, height: 24, imageRendering: 'pixelated' }} />
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
+                      <img src={pokemon.spriteUrl} alt="" style={{ width: 28, height: 28, imageRendering: 'pixelated' }} />
+                      <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
                       <div style={{ display: 'flex', gap: 3 }}>
                         {pokemon.types.map(t => <TypeBadge key={t} typeName={t} small />)}
                       </div>
@@ -142,11 +142,11 @@ export const DefenderPanel: React.FC = () => {
                             }}
                           >
                             <TypeBadge typeName={move.type} small />
-                            <span style={{ flex: 1, fontSize: 11, color: 'var(--text-primary)' }}>{moveName}</span>
+                            <span style={{ flex: 1, fontSize: 13, color: 'var(--text-primary)' }}>{moveName}</span>
                             {stab && (
                               <span style={{
                                 color: '#ffb347',
-                                fontSize: 8,
+                                fontSize: 10,
                                 fontWeight: 700,
                                 border: '1px solid rgba(255,179,71,0.4)',
                                 padding: '0 3px',
@@ -156,7 +156,7 @@ export const DefenderPanel: React.FC = () => {
                             {move.power != null && (
                               <span style={{
                                 color: 'var(--text-muted)',
-                                fontSize: 10,
+                                fontSize: 12,
                                 fontFamily: "'Share Tech Mono', monospace",
                               }}>
                                 {move.power}
@@ -164,7 +164,7 @@ export const DefenderPanel: React.FC = () => {
                             )}
                             <span style={{
                               color: '#4ade80',
-                              fontSize: 11,
+                              fontSize: 13,
                               fontWeight: 700,
                               fontFamily: "'Share Tech Mono', monospace",
                             }}>

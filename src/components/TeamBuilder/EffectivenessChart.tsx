@@ -18,7 +18,7 @@ export const EffectivenessChart: React.FC<Props> = ({ moveType }) => {
     <div style={{ marginTop: 6 }}>
       {superEffective.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 3 }}>
-          <span style={{ color: '#4ade80', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', minWidth: 28, marginTop: 2 }}>2×</span>
+          <span style={{ color: '#4ade80', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', minWidth: 28, marginTop: 2 }}>2×</span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
             {superEffective.map(t => <TypeBadge key={t} typeName={t} small />)}
           </div>
@@ -26,7 +26,7 @@ export const EffectivenessChart: React.FC<Props> = ({ moveType }) => {
       )}
       {notVeryEffective.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 3 }}>
-          <span style={{ color: '#f97316', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', minWidth: 28, marginTop: 2 }}>½×</span>
+          <span style={{ color: '#f97316', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', minWidth: 28, marginTop: 2 }}>½×</span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
             {notVeryEffective.map(t => <TypeBadge key={t} typeName={t} small />)}
           </div>
@@ -34,7 +34,7 @@ export const EffectivenessChart: React.FC<Props> = ({ moveType }) => {
       )}
       {immune.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-          <span style={{ color: '#6b7280', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', minWidth: 28, marginTop: 2 }}>0×</span>
+          <span style={{ color: '#6b7280', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', minWidth: 28, marginTop: 2 }}>0×</span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
             {immune.map(t => <TypeBadge key={t} typeName={t} small />)}
           </div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { MovePicker } from './MovePicker'
 import { EffectivenessChart } from './EffectivenessChart'
 import { useCacheStore } from '../../store/cacheStore'
@@ -16,6 +16,7 @@ export const MoveSlot: React.FC<Props> = ({ slotIndex, moveIndex, pokemonTypes, 
   const setMove = useTeamStore(s => s.setMove)
   const moveCache = useCacheStore(s => s.moveCache)
   const move = moveId ? moveCache[moveId] : null
+  const [expanded, setExpanded] = useState(false)
 
   const hasStab = move ? isSTAB(move.type, pokemonTypes) : false
 
@@ -26,10 +27,10 @@ export const MoveSlot: React.FC<Props> = ({ slotIndex, moveIndex, pokemonTypes, 
       borderRadius: 3,
       padding: '6px 8px',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: move ? 4 : 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{
           color: 'var(--text-muted)',
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: 700,
           fontFamily: "'Share Tech Mono', monospace",
           minWidth: 14,
@@ -49,7 +50,7 @@ export const MoveSlot: React.FC<Props> = ({ slotIndex, moveIndex, pokemonTypes, 
                 background: 'rgba(255,179,71,0.15)',
                 border: '1px solid rgba(255,179,71,0.4)',
                 color: '#ffb347',
-                fontSize: 8,
+                fontSize: 9,
                 fontWeight: 700,
                 padding: '1px 4px',
                 borderRadius: 2,
@@ -61,16 +62,30 @@ export const MoveSlot: React.FC<Props> = ({ slotIndex, moveIndex, pokemonTypes, 
             {move.power && (
               <span style={{
                 color: 'var(--text-muted)',
-                fontSize: 9,
+                fontSize: 11,
                 fontFamily: "'Share Tech Mono', monospace",
               }}>
                 {move.power}
               </span>
             )}
+            <button
+              onClick={() => setExpanded(e => !e)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-muted)',
+                fontSize: 10,
+                padding: '0 2px',
+                cursor: 'pointer',
+                lineHeight: 1,
+              }}
+            >
+              {expanded ? '▾' : '▸'}
+            </button>
           </div>
         )}
       </div>
-      {move && <EffectivenessChart moveType={move.type} />}
+      {move && expanded && <EffectivenessChart moveType={move.type} />}
     </div>
   )
 }

@@ -22,7 +22,7 @@ export const TypeBadge: React.FC<Props> = ({ typeName, small }) => {
         border: `1px solid ${color.border}`,
         color: color.text,
         boxShadow: `0 0 6px ${color.glow}`,
-        fontSize: small ? '9px' : '10px',
+        fontSize: small ? '11px' : '12px',
         fontWeight: 700,
         letterSpacing: '0.06em',
         textTransform: 'uppercase',

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { t } from './utils/i18n'
 import { Header } from './components/Layout/Header'
 import { TeamBuilder } from './components/TeamBuilder/TeamBuilder'
@@ -18,6 +18,7 @@ function App() {
   const roster = useTeamStore(s => s.roster)
   const theme = useTeamStore(s => s.theme)
   const language = useTeamStore(s => s.language)
+  const [sideTab, setSideTab] = useState<'teams' | 'box' | 'analyse'>('teams')
 
   useEffect(() => {
     document.documentElement.classList.toggle('light', theme === 'light')
@@ -78,13 +79,44 @@ function App() {
         gap: 20,
         alignItems: 'start',
       }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <TeamBuilder />
-          <DefenderPanel />
-        </div>
-        <div style={{ position: 'sticky', top: 76, display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <TeamList />
-          <RosterPanel />
+        <TeamBuilder />
+        <div style={{ position: 'sticky', top: 76 }}>
+          {/* Tab bar */}
+          <div style={{ display: 'flex', background: 'var(--bg-card2)', border: '1px solid var(--border)', borderBottom: 'none', borderRadius: '4px 4px 0 0' }}>
+            {(['teams', 'box', 'analyse'] as const).map((tab, i) => {
+              const labels = { teams: t('teams', language), box: t('roster', language), analyse: 'ANALYSE' }
+              const active = sideTab === tab
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setSideTab(tab)}
+                  style={{
+                    flex: 1,
+                    padding: '9px 4px',
+                    background: active ? 'var(--bg-card)' : 'transparent',
+                    border: 'none',
+                    borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
+                    borderRight: i < 2 ? '1px solid var(--border)' : 'none',
+                    color: active ? 'var(--accent)' : 'var(--text-muted)',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    fontFamily: "'Rajdhani', sans-serif",
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {labels[tab]}
+                </button>
+              )
+            })}
+          </div>
+          {/* Tab content – max height so it doesn't grow past viewport */}
+          <div style={{ border: '1px solid var(--border)', borderTop: 'none', borderRadius: '0 0 4px 4px', overflowY: 'auto', maxHeight: 'calc(100vh - 120px)' }}>
+            {sideTab === 'teams' && <TeamList />}
+            {sideTab === 'box' && <RosterPanel />}
+            {sideTab === 'analyse' && <DefenderPanel />}
+          </div>
         </div>
       </main>
       <footer style={{

@@ -87,7 +87,7 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
           border: open ? '1px solid var(--accent)' : '1px solid var(--border)',
           borderRadius: 2,
           color: displayName ? 'var(--text-primary)' : 'var(--text-muted)',
-          fontSize: 11,
+          fontSize: 13,
           fontWeight: 500,
           textAlign: 'left',
           cursor: 'pointer',
@@ -148,7 +148,7 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
                     background: m.id === value ? 'var(--bg-hover)' : 'transparent',
                     border: 'none',
                     color: 'var(--text-primary)',
-                    fontSize: 11,
+                    fontSize: 13,
                     textAlign: 'left',
                     cursor: 'pointer',
                   }}
@@ -157,15 +157,15 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
                 >
                   <TypeBadge typeName={m.type} small />
                   <span style={{ flex: 1 }}>{name}</span>
-                  {m.power && <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>{m.power}</span>}
-                  <span style={{ color: 'var(--text-muted)', fontSize: 9, letterSpacing: '0.05em' }}>
+                  {m.power && <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{m.power}</span>}
+                  <span style={{ color: 'var(--text-muted)', fontSize: 11, letterSpacing: '0.05em' }}>
                     {m.damageClass === 'physical' ? 'PHY' : m.damageClass === 'special' ? 'SPC' : 'STA'}
                   </span>
                 </button>
               )
             })}
             {filtered.length === 0 && (
-              <div style={{ padding: 12, color: 'var(--text-muted)', fontSize: 11, textAlign: 'center' }}>
+              <div style={{ padding: 12, color: 'var(--text-muted)', fontSize: 13, textAlign: 'center' }}>
                 {t('noMovesFound', language)}
               </div>
             )}

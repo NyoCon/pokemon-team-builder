@@ -61,16 +61,16 @@ export const Header: React.FC = () => {
       {/* Status */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
         {loading && (
-          <span style={{ color: 'var(--accent)', fontSize: 11, letterSpacing: '0.05em' }}>
+          <span style={{ color: 'var(--accent)', fontSize: 13, letterSpacing: '0.05em' }}>
             <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⟳</span>
             {' '}{t('loadingData', language)}
           </span>
         )}
         {error && (
-          <span style={{ color: 'var(--danger)', fontSize: 11 }}>⚠ {t('loadError', language)}</span>
+          <span style={{ color: 'var(--danger)', fontSize: 13 }}>⚠ {t('loadError', language)}</span>
         )}
         {!loading && !error && pokemonList.length > 0 && (
-          <span style={{ color: 'var(--text-muted)', fontSize: 10, fontFamily: "'Share Tech Mono', monospace" }}>
+          <span style={{ color: 'var(--text-muted)', fontSize: 12, fontFamily: "'Share Tech Mono', monospace" }}>
             {t('pokemonLoaded', language, { n: pokemonList.length })}
           </span>
         )}
@@ -105,7 +105,7 @@ export const Header: React.FC = () => {
               border: language === code ? '1px solid rgba(0,191,255,0.4)' : '1px solid var(--border)',
               borderRadius: 2,
               color: language === code ? 'var(--accent)' : 'var(--text-muted)',
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: 700,
               letterSpacing: '0.08em',
             }}

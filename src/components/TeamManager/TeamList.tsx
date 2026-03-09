@@ -120,7 +120,7 @@ export const TeamList: React.FC = () => {
 
       {/* Team list */}
       {teamNames.length === 0 ? (
-        <div style={{ color: 'var(--text-muted)', fontSize: 11, textAlign: 'center', padding: '8px 0' }}>
+        <div style={{ color: 'var(--text-muted)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>
           {t('noSavedTeams', language)}
         </div>
       ) : (
@@ -138,7 +138,7 @@ export const TeamList: React.FC = () => {
                 borderRadius: 3,
               }}
             >
-              <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>
+              <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
                 {name}
               </span>
               <button
