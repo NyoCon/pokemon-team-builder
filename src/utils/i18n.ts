@@ -20,9 +20,13 @@ const translations = {
   // Slot
   empty:              { en: '— empty —', de: '— leer —', fr: '— vide —', it: '— vuoto —', es: '— vacío —' },
 
-  // Defender panel
+  // Defender panel / Analysis page
   opponentAnalysis:   { en: 'Opponent Analysis', de: 'Gegner-Analyse', fr: 'Analyse adversaire', it: 'Analisi avversario', es: 'Análisis rival' },
   noSuperEffective:   { en: 'No team move is super effective', de: 'Keine super-effektive Attacke im Team', fr: 'Aucune capacité super efficace', it: 'Nessuna mossa super efficace', es: 'Ningún movimiento es súper efectivo' },
+  addOpponent:        { en: '+ Add opponent', de: '+ Gegner hinzufügen', fr: '+ Ajouter adversaire', it: '+ Aggiungi avversario', es: '+ Añadir rival' },
+  clearAll:           { en: 'Clear all', de: 'Alle leeren', fr: 'Tout vider', it: 'Svuota tutto', es: 'Vaciar todo' },
+  opponent:           { en: 'Opponent', de: 'Gegner', fr: 'Adversaire', it: 'Avversario', es: 'Rival' },
+  remove:             { en: 'Remove', de: 'Entfernen', fr: 'Supprimer', it: 'Rimuovi', es: 'Eliminar' },
 
   // Team manager
   teams:              { en: 'Teams', de: 'Teams', fr: 'Équipes', it: 'Squadre', es: 'Equipos' },

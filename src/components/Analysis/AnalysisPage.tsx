@@ -103,13 +103,13 @@ export const AnalysisPage: React.FC = () => {
           onClick={() => defenders.forEach((_, i) => setDefenderAt(i, null))}
           style={{ padding: '6px 14px', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text-muted)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif", cursor: 'pointer', textTransform: 'uppercase' }}
         >
-          CLEAR ALL
+          {t('clearAll', language)}
         </button>
         <button
           onClick={addDefender}
           style={{ padding: '6px 14px', background: 'rgba(255,77,109,0.08)', border: '1px solid rgba(255,77,109,0.3)', borderRadius: 3, color: 'var(--danger)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif", cursor: 'pointer', textTransform: 'uppercase' }}
         >
-          + GEGNER HINZUFÜGEN
+          {t('addOpponent', language)}
         </button>
       </div>
 
@@ -128,7 +128,7 @@ export const AnalysisPage: React.FC = () => {
                   <div style={{ padding: '8px 10px', background: 'var(--bg-card2)', borderBottom: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                       <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace", letterSpacing: '0.1em', fontWeight: 700 }}>
-                        GEGNER {i + 1}
+                        {t('opponent', language).toUpperCase()} {i + 1}
                       </span>
                       {defender && (
                         <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace" }}>
@@ -140,6 +140,7 @@ export const AnalysisPage: React.FC = () => {
                       {canRemove && (
                         <button
                           onClick={() => removeDefender(i)}
+                          title={t('remove', language)}
                           style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 2, color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer', padding: '0 5px', lineHeight: '18px' }}
                         >
                           ×
