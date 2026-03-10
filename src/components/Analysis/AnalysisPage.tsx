@@ -5,6 +5,7 @@ import { useTeamStore } from '../../store/teamStore'
 import { useCacheStore } from '../../store/cacheStore'
 import { calcDefenderEffectiveness } from '../../utils/effectiveness'
 import { isSTAB } from '../../utils/stab'
+import { getAbilityImmunities } from '../../utils/abilities'
 import { t } from '../../utils/i18n'
 import { TRAINERS, GYM_LEADERS, ELITE_FOUR, ELITE_FOUR_REMATCH, GIOVANNI_ENCOUNTERS, RIVAL_BATTLES, CHAMPION } from '../../data/trainers'
 import type { MoveDetail, Lang } from '../../types'
@@ -28,6 +29,8 @@ export const AnalysisPage: React.FC = () => {
     const defender = defId ? pokemonList.find(p => p.id === defId) : null
     if (!defender || !Object.keys(typeChart).length) return null
 
+    const defenderImmunities = getAbilityImmunities(defender.id)
+
     const teamMatchups = activeTeam.slots.map((slot, i) => {
       const pokemon = slot.pokemonId ? pokemonList.find(p => p.id === slot.pokemonId) : null
       if (!pokemon) return null
@@ -37,7 +40,7 @@ export const AnalysisPage: React.FC = () => {
         .map(mid => moveCache[mid!])
         .filter(m => m && m.power != null)
         .map(move => {
-          const mult = calcDefenderEffectiveness(move.type, defender.types, typeChart)
+          const mult = calcDefenderEffectiveness(move.type, defender.types, typeChart, defenderImmunities)
           const stab = isSTAB(move.type, pokemon.types)
           return { move, mult, stab }
         })

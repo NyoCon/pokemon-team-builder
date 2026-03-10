@@ -23,11 +23,15 @@ export function calcEffectiveness(
 }
 
 // For a specific defender with types (dual-type handled)
+// immuneTypes: additional move types blocked by ability (e.g. Levitate → ['ground'])
 export function calcDefenderEffectiveness(
   moveType: string,
   defenderTypes: string[],
-  typeChart: TypeChart
+  typeChart: TypeChart,
+  immuneTypes: string[] = []
 ): EffectivenessMultiplier {
+  if (immuneTypes.includes(moveType)) return 0
+
   const chart = typeChart[moveType]
   if (!chart) return 1
 
