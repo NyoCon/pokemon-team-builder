@@ -20,7 +20,7 @@ interface TeamStore {
   teams: Record<string, Team>
   language: Lang
   theme: 'dark' | 'light'
-  defenderPokemonId: number | null
+  defenders: (number | null)[]
   roster: RosterEntry[]
 
   setSlot: (index: number, pokemonId: number | null) => void
@@ -30,7 +30,9 @@ interface TeamStore {
   deleteTeam: (name: string) => void
   setLanguage: (lang: Lang) => void
   setTheme: (theme: 'dark' | 'light') => void
-  setDefender: (pokemonId: number | null) => void
+  setDefenderAt: (index: number, pokemonId: number | null) => void
+  addDefender: () => void
+  removeDefender: (index: number) => void
   setActiveTeam: (team: Team) => void
   resetActiveTeam: () => void
   addToRoster: (entry: Omit<RosterEntry, 'id'>) => void
@@ -46,7 +48,7 @@ export const useTeamStore = create<TeamStore>()(
       teams: {},
       language: 'en',
       theme: 'dark',
-      defenderPokemonId: null,
+      defenders: [null],
       roster: [],
 
       setSlot: (index, pokemonId) =>
@@ -88,7 +90,19 @@ export const useTeamStore = create<TeamStore>()(
 
       setLanguage: (language) => set({ language }),
       setTheme: (theme) => set({ theme }),
-      setDefender: (defenderPokemonId) => set({ defenderPokemonId }),
+      setDefenderAt: (index, pokemonId) =>
+        set(s => {
+          const defenders = [...s.defenders]
+          defenders[index] = pokemonId
+          return { defenders }
+        }),
+      addDefender: () =>
+        set(s => ({ defenders: [...s.defenders, null] })),
+      removeDefender: (index) =>
+        set(s => {
+          if (s.defenders.length <= 1) return {}
+          return { defenders: s.defenders.filter((_, i) => i !== index) }
+        }),
       setActiveTeam: (activeTeam) => set({ activeTeam }),
       resetActiveTeam: () => set({ activeTeam: makeEmptyTeam() }),
 

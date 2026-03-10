@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { t } from './utils/i18n'
 import { Header } from './components/Layout/Header'
 import { TeamBuilder } from './components/TeamBuilder/TeamBuilder'
-import { DefenderPanel } from './components/Defender/DefenderPanel'
+import { AnalysisPage } from './components/Analysis/AnalysisPage'
 import { TeamList } from './components/TeamManager/TeamList'
 import { RosterPanel } from './components/Roster/RosterPanel'
 import { useCacheStore } from './store/cacheStore'
@@ -18,7 +18,8 @@ function App() {
   const roster = useTeamStore(s => s.roster)
   const theme = useTeamStore(s => s.theme)
   const language = useTeamStore(s => s.language)
-  const [sideTab, setSideTab] = useState<'teams' | 'box' | 'analyse'>('teams')
+  const [activePage, setActivePage] = useState<'team' | 'analyse'>('team')
+  const [sideTab, setSideTab] = useState<'teams' | 'box'>('teams')
 
   useEffect(() => {
     document.documentElement.classList.toggle('light', theme === 'light')
@@ -68,56 +69,93 @@ function App() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
+      {/* Page nav */}
+      <div style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-card2)' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 0 }}>
+          {(['team', 'analyse'] as const).map(page => {
+            const labels = { team: 'TEAM', analyse: 'ANALYSE' }
+            const active = activePage === page
+            return (
+              <button
+                key={page}
+                onClick={() => setActivePage(page)}
+                style={{
+                  padding: '10px 20px',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
+                  color: active ? 'var(--accent)' : 'var(--text-muted)',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  fontFamily: "'Rajdhani', sans-serif",
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                  marginBottom: -1,
+                }}
+              >
+                {labels[page]}
+              </button>
+            )
+          })}
+        </div>
+      </div>
       <main style={{
         flex: 1,
         padding: '20px 24px',
         maxWidth: 1400,
         margin: '0 auto',
         width: '100%',
-        display: 'grid',
-        gridTemplateColumns: '1fr 300px',
-        gap: 20,
-        alignItems: 'start',
+        ...(activePage === 'team' ? {
+          display: 'grid',
+          gridTemplateColumns: '1fr 300px',
+          gap: 20,
+          alignItems: 'start',
+        } : {}),
       }}>
-        <TeamBuilder />
-        <div style={{ position: 'sticky', top: 76 }}>
-          {/* Tab bar */}
-          <div style={{ display: 'flex', background: 'var(--bg-card2)', border: '1px solid var(--border)', borderBottom: 'none', borderRadius: '4px 4px 0 0' }}>
-            {(['teams', 'box', 'analyse'] as const).map((tab, i) => {
-              const labels = { teams: t('teams', language), box: t('roster', language), analyse: 'ANALYSE' }
-              const active = sideTab === tab
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setSideTab(tab)}
-                  style={{
-                    flex: 1,
-                    padding: '9px 4px',
-                    background: active ? 'var(--bg-card)' : 'transparent',
-                    border: 'none',
-                    borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
-                    borderRight: i < 2 ? '1px solid var(--border)' : 'none',
-                    color: active ? 'var(--accent)' : 'var(--text-muted)',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    letterSpacing: '0.1em',
-                    fontFamily: "'Rajdhani', sans-serif",
-                    cursor: 'pointer',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {labels[tab]}
-                </button>
-              )
-            })}
-          </div>
-          {/* Tab content – max height so it doesn't grow past viewport */}
-          <div style={{ border: '1px solid var(--border)', borderTop: 'none', borderRadius: '0 0 4px 4px', overflowY: 'auto', maxHeight: 'calc(100vh - 120px)' }}>
-            {sideTab === 'teams' && <TeamList />}
-            {sideTab === 'box' && <RosterPanel />}
-            {sideTab === 'analyse' && <DefenderPanel />}
-          </div>
-        </div>
+        {activePage === 'team' && (
+          <>
+            <TeamBuilder />
+            <div style={{ position: 'sticky', top: 76 }}>
+              {/* Tab bar */}
+              <div style={{ display: 'flex', background: 'var(--bg-card2)', border: '1px solid var(--border)', borderBottom: 'none', borderRadius: '4px 4px 0 0' }}>
+                {(['teams', 'box'] as const).map((tab, i) => {
+                  const labels = { teams: t('teams', language), box: t('roster', language) }
+                  const active = sideTab === tab
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setSideTab(tab)}
+                      style={{
+                        flex: 1,
+                        padding: '9px 4px',
+                        background: active ? 'var(--bg-card)' : 'transparent',
+                        border: 'none',
+                        borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
+                        borderRight: i < 1 ? '1px solid var(--border)' : 'none',
+                        color: active ? 'var(--accent)' : 'var(--text-muted)',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: '0.1em',
+                        fontFamily: "'Rajdhani', sans-serif",
+                        cursor: 'pointer',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {labels[tab]}
+                    </button>
+                  )
+                })}
+              </div>
+              {/* Tab content */}
+              <div style={{ border: '1px solid var(--border)', borderTop: 'none', borderRadius: '0 0 4px 4px', overflowY: 'auto', maxHeight: 'calc(100vh - 120px)' }}>
+                {sideTab === 'teams' && <TeamList />}
+                {sideTab === 'box' && <RosterPanel />}
+              </div>
+            </div>
+          </>
+        )}
+        {activePage === 'analyse' && <AnalysisPage />}
       </main>
       <footer style={{
         borderTop: '1px solid var(--border)',
