@@ -107,75 +107,79 @@ export const AnalysisPage: React.FC = () => {
         </button>
       </div>
 
-      {/* One card per defender, 2-col grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, alignItems: 'start' }}>
-        {defenders.map((defId, i) => {
-          const result = getMatchups(defId)
-          const defender = result?.defender ?? null
-          const teamMatchups = result?.teamMatchups ?? []
+      {/* 2 independent columns, cards stack vertically per column */}
+      <div style={{ display: 'flex', gap: 12, alignItems: 'start' }}>
+        {[0, 1].map(col => (
+          <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {defenders.map((defId, i) => {
+              if (i % 2 !== col) return null
+              const result = getMatchups(defId)
+              const defender = result?.defender ?? null
+              const teamMatchups = result?.teamMatchups ?? []
+              return (
+                <div key={i} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+                  {/* Picker header */}
+                  <div style={{ padding: '8px 10px', background: 'var(--bg-card2)', borderBottom: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                      <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace", letterSpacing: '0.1em', fontWeight: 700 }}>
+                        GEGNER {i + 1}
+                      </span>
+                      {defender && (
+                        <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace" }}>
+                          #{String(defender.id).padStart(3, '0')}
+                        </span>
+                      )}
+                      <div style={{ flex: 1 }} />
+                      {defender && defender.types.map(tp => <TypeBadge key={tp} typeName={tp} />)}
+                      {canRemove && (
+                        <button
+                          onClick={() => removeDefender(i)}
+                          style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 2, color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer', padding: '0 5px', lineHeight: '18px' }}
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                    <PokemonPicker value={defId ?? null} onChange={id => setDefenderAt(i, id)} placeholderKey="chooseOpponent" />
+                  </div>
 
-          return (
-            <div key={i} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 4, overflow: 'hidden' }}>
-              {/* Picker header */}
-              <div style={{ padding: '8px 10px', background: 'var(--bg-card2)', borderBottom: '1px solid var(--border)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                  <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace", letterSpacing: '0.1em', fontWeight: 700 }}>
-                    GEGNER {i + 1}
-                  </span>
-                  {defender && (
-                    <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace" }}>
-                      #{String(defender.id).padStart(3, '0')}
-                    </span>
-                  )}
-                  <div style={{ flex: 1 }} />
-                  {defender && defender.types.map(tp => <TypeBadge key={tp} typeName={tp} />)}
-                  {canRemove && (
-                    <button
-                      onClick={() => removeDefender(i)}
-                      style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 2, color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer', padding: '0 5px', lineHeight: '18px' }}
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-                <PokemonPicker value={defId ?? null} onChange={id => setDefenderAt(i, id)} placeholderKey="chooseOpponent" />
-              </div>
-
-              {/* Matchup results — inside the same card */}
-              {!defender ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>—</div>
-              ) : teamMatchups.length === 0 ? (
-                <div style={{ padding: '16px', color: 'var(--text-muted)', fontSize: 12 }}>{t('noSuperEffective', language)}</div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                  {teamMatchups.map((m, mi) => {
-                    if (!m) return null
-                    const { pokemon, superEffective, resisted, slotIndex } = m
-                    const name = pokemon.names[language] || pokemon.names.en
-                    return (
-                      <div key={slotIndex} style={{ borderTop: mi > 0 ? '1px solid var(--border)' : undefined, paddingTop: mi > 0 ? 6 : 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: 'var(--bg-card2)' }}>
-                          <img src={pokemon.spriteUrl} alt="" style={{ width: 24, height: 24, imageRendering: 'pixelated' }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
-                          <div style={{ display: 'flex', gap: 3 }}>
-                            {pokemon.types.map(tp => <TypeBadge key={tp} typeName={tp} small />)}
+                  {/* Matchup results */}
+                  {!defender ? (
+                    <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>—</div>
+                  ) : teamMatchups.length === 0 ? (
+                    <div style={{ padding: '16px', color: 'var(--text-muted)', fontSize: 12 }}>{t('noSuperEffective', language)}</div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      {teamMatchups.map((m, mi) => {
+                        if (!m) return null
+                        const { pokemon, superEffective, resisted, slotIndex } = m
+                        const name = pokemon.names[language] || pokemon.names.en
+                        return (
+                          <div key={slotIndex} style={{ borderTop: mi > 0 ? '1px solid var(--border)' : undefined, paddingTop: mi > 0 ? 6 : 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: 'var(--bg-card2)' }}>
+                              <img src={pokemon.spriteUrl} alt="" style={{ width: 24, height: 24, imageRendering: 'pixelated' }} />
+                              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
+                              <div style={{ display: 'flex', gap: 3 }}>
+                                {pokemon.types.map(tp => <TypeBadge key={tp} typeName={tp} small />)}
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '6px 8px' }}>
+                              {superEffective.map(e => renderMoveRow(e, true, language))}
+                              {resisted.length > 0 && superEffective.length > 0 && (
+                                <div style={{ borderTop: '1px solid var(--border)', margin: '2px 0' }} />
+                              )}
+                              {resisted.map(e => renderMoveRow(e, false, language))}
+                            </div>
                           </div>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '6px 8px' }}>
-                          {superEffective.map(e => renderMoveRow(e, true, language))}
-                          {resisted.length > 0 && superEffective.length > 0 && (
-                            <div style={{ borderTop: '1px solid var(--border)', margin: '2px 0' }} />
-                          )}
-                          {resisted.map(e => renderMoveRow(e, false, language))}
-                        </div>
-                      </div>
-                    )
-                  })}
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          )
-        })}
+              )
+            })}
+          </div>
+        ))}
       </div>
     </div>
   )
