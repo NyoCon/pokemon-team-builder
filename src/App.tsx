@@ -74,16 +74,12 @@ function App() {
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'center', gap: 0 }}>
           {(['team', 'analyse'] as const).map(page => {
             const labels = { team: t('pageTeam', language), analyse: t('pageAnalyse', language) }
-            const icons  = { team: '◈', analyse: '◎' }
             const active = activePage === page
             return (
               <button
                 key={page}
                 onClick={() => setActivePage(page)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 7,
                   padding: '11px 28px',
                   background: 'transparent',
                   border: 'none',
@@ -98,7 +94,6 @@ function App() {
                   marginBottom: -1,
                 }}
               >
-                <span style={{ fontSize: 14, lineHeight: 1 }}>{icons[page]}</span>
                 {labels[page]}
               </button>
             )
