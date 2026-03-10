@@ -1,5 +1,5 @@
 import React from 'react'
-import { DefenderCard } from './DefenderCard'
+import { PokemonPicker } from '../TeamBuilder/PokemonPicker'
 import { TypeBadge } from '../TeamBuilder/TypeBadge'
 import { useTeamStore } from '../../store/teamStore'
 import { useCacheStore } from '../../store/cacheStore'
@@ -11,6 +11,8 @@ import type { MoveDetail, Lang } from '../../types'
 export const AnalysisPage: React.FC = () => {
   const defenders = useTeamStore(s => s.defenders)
   const addDefender = useTeamStore(s => s.addDefender)
+  const removeDefender = useTeamStore(s => s.removeDefender)
+  const setDefenderAt = useTeamStore(s => s.setDefenderAt)
   const activeTeam = useTeamStore(s => s.activeTeam)
   const language = useTeamStore(s => s.language)
 
@@ -20,8 +22,7 @@ export const AnalysisPage: React.FC = () => {
 
   const canRemove = defenders.length > 1
 
-  // Compute matchups per defender
-  const allMatchups = defenders.map((defId, di) => {
+  const getMatchups = (defId: number | null) => {
     const defender = defId ? pokemonList.find(p => p.id === defId) : null
     if (!defender || !Object.keys(typeChart).length) return null
 
@@ -55,8 +56,8 @@ export const AnalysisPage: React.FC = () => {
       return { pokemon, superEffective, resisted, slotIndex: i }
     }).filter(Boolean)
 
-    return { defender, teamMatchups, defenderIndex: di }
-  })
+    return { defender, teamMatchups }
+  }
 
   const renderMoveRow = (
     { move, mult, stab }: { move: MoveDetail; mult: number; stab: boolean },
@@ -93,98 +94,85 @@ export const AnalysisPage: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{
-          width: 3, height: 20,
-          background: 'var(--danger)',
-          borderRadius: 2,
-          boxShadow: '0 0 8px rgba(255,77,109,0.5)',
-        }} />
-        <span style={{
-          fontFamily: "'Rajdhani', sans-serif",
-          fontSize: 14,
-          fontWeight: 700,
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          color: 'var(--text-secondary)',
-        }}>
+        <div style={{ width: 3, height: 20, background: 'var(--danger)', borderRadius: 2, boxShadow: '0 0 8px rgba(255,77,109,0.5)' }} />
+        <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
           {t('opponentAnalysis', language)}
         </span>
         <div style={{ flex: 1 }} />
         <button
           onClick={addDefender}
-          style={{
-            padding: '6px 14px',
-            background: 'rgba(255,77,109,0.08)',
-            border: '1px solid rgba(255,77,109,0.3)',
-            borderRadius: 3,
-            color: 'var(--danger)',
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.1em',
-            fontFamily: "'Rajdhani', sans-serif",
-            cursor: 'pointer',
-            textTransform: 'uppercase',
-          }}
+          style={{ padding: '6px 14px', background: 'rgba(255,77,109,0.08)', border: '1px solid rgba(255,77,109,0.3)', borderRadius: 3, color: 'var(--danger)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif", cursor: 'pointer', textTransform: 'uppercase' }}
         >
           + GEGNER HINZUFÜGEN
         </button>
       </div>
 
-      {/* One 2-col grid: each cell = picker + results */}
+      {/* One card per defender, 2-col grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, alignItems: 'start' }}>
-        {defenders.map((_, i) => {
-          const entry = allMatchups[i]
-          return (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <DefenderCard index={i} canRemove={canRemove} />
+        {defenders.map((defId, i) => {
+          const result = getMatchups(defId)
+          const defender = result?.defender ?? null
+          const teamMatchups = result?.teamMatchups ?? []
 
-              {entry && (() => {
-                const { defender: _def, teamMatchups } = entry
-                if (teamMatchups.length === 0) return (
-                  <div style={{ padding: '8px 0', color: 'var(--text-muted)', fontSize: 12 }}>
-                    {t('noSuperEffective', language)}
-                  </div>
-                )
-                return (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {teamMatchups.map(m => {
-                      if (!m) return null
-                      const { pokemon, superEffective, resisted, slotIndex } = m
-                      const name = pokemon.names[language] || pokemon.names.en
-                      return (
-                        <div key={slotIndex} style={{
-                          background: 'var(--bg-card)',
-                          border: '1px solid var(--border)',
-                          borderRadius: 4,
-                          overflow: 'hidden',
-                        }}>
-                          {/* Card header */}
-                          <div style={{
-                            display: 'flex', alignItems: 'center', gap: 8,
-                            padding: '7px 10px',
-                            background: 'var(--bg-card2)',
-                            borderBottom: '1px solid var(--border)',
-                          }}>
-                            <img src={pokemon.spriteUrl} alt="" style={{ width: 28, height: 28, imageRendering: 'pixelated' }} />
-                            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
-                            <div style={{ display: 'flex', gap: 3 }}>
-                              {pokemon.types.map(tp => <TypeBadge key={tp} typeName={tp} small />)}
-                            </div>
-                          </div>
-                          {/* Move rows */}
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '6px 8px' }}>
-                            {superEffective.map(e => renderMoveRow(e, true, language))}
-                            {resisted.length > 0 && superEffective.length > 0 && (
-                              <div style={{ borderTop: '1px solid var(--border)', margin: '2px 0' }} />
-                            )}
-                            {resisted.map(e => renderMoveRow(e, false, language))}
+          return (
+            <div key={i} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+              {/* Picker header */}
+              <div style={{ padding: '8px 10px', background: 'var(--bg-card2)', borderBottom: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace", letterSpacing: '0.1em', fontWeight: 700 }}>
+                    GEGNER {i + 1}
+                  </span>
+                  {defender && (
+                    <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace" }}>
+                      #{String(defender.id).padStart(3, '0')}
+                    </span>
+                  )}
+                  <div style={{ flex: 1 }} />
+                  {defender && defender.types.map(tp => <TypeBadge key={tp} typeName={tp} />)}
+                  {canRemove && (
+                    <button
+                      onClick={() => removeDefender(i)}
+                      style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 2, color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer', padding: '0 5px', lineHeight: '18px' }}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+                <PokemonPicker value={defId ?? null} onChange={id => setDefenderAt(i, id)} placeholderKey="chooseOpponent" />
+              </div>
+
+              {/* Matchup results — inside the same card */}
+              {!defender ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>—</div>
+              ) : teamMatchups.length === 0 ? (
+                <div style={{ padding: '16px', color: 'var(--text-muted)', fontSize: 12 }}>{t('noSuperEffective', language)}</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                  {teamMatchups.map((m, mi) => {
+                    if (!m) return null
+                    const { pokemon, superEffective, resisted, slotIndex } = m
+                    const name = pokemon.names[language] || pokemon.names.en
+                    return (
+                      <div key={slotIndex} style={{ borderTop: mi > 0 ? '1px solid var(--border)' : undefined }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: 'var(--bg-card2)' }}>
+                          <img src={pokemon.spriteUrl} alt="" style={{ width: 24, height: 24, imageRendering: 'pixelated' }} />
+                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
+                          <div style={{ display: 'flex', gap: 3 }}>
+                            {pokemon.types.map(tp => <TypeBadge key={tp} typeName={tp} small />)}
                           </div>
                         </div>
-                      )
-                    })}
-                  </div>
-                )
-              })()}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '6px 8px' }}>
+                          {superEffective.map(e => renderMoveRow(e, true, language))}
+                          {resisted.length > 0 && superEffective.length > 0 && (
+                            <div style={{ borderTop: '1px solid var(--border)', margin: '2px 0' }} />
+                          )}
+                          {resisted.map(e => renderMoveRow(e, false, language))}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           )
         })}
