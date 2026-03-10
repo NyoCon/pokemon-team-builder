@@ -143,7 +143,7 @@ export const AnalysisPage: React.FC = () => {
 
       {/* Matchup results */}
       {allMatchups.some(Boolean) && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16 }}>
             <span style={{
               fontFamily: "'Rajdhani', sans-serif",
@@ -157,58 +157,60 @@ export const AnalysisPage: React.FC = () => {
             </span>
           </div>
 
-          {allMatchups.map(entry => {
-            if (!entry) return null
-            const { defender, teamMatchups, defenderIndex } = entry
-            const defName = defender.names[language] || defender.names.en
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, alignItems: 'start' }}>
+            {allMatchups.map(entry => {
+              if (!entry) return null
+              const { defender, teamMatchups, defenderIndex } = entry
+              const defName = defender.names[language] || defender.names.en
 
-            return (
-              <div key={defenderIndex}>
-                {/* Defender label */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                  <img src={defender.spriteUrl} alt="" style={{ width: 32, height: 32, imageRendering: 'pixelated' }} />
-                  <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--text-primary)' }}>
-                    GEGNER {defenderIndex + 1} — {defName.toUpperCase()}
-                  </span>
-                  <div style={{ display: 'flex', gap: 3 }}>
-                    {defender.types.map(tp => <TypeBadge key={tp} typeName={tp} />)}
+              return (
+                <div key={defenderIndex} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {/* Defender label */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <img src={defender.spriteUrl} alt="" style={{ width: 32, height: 32, imageRendering: 'pixelated' }} />
+                    <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--text-primary)' }}>
+                      GEGNER {defenderIndex + 1} — {defName.toUpperCase()}
+                    </span>
+                    <div style={{ display: 'flex', gap: 3 }}>
+                      {defender.types.map(tp => <TypeBadge key={tp} typeName={tp} />)}
+                    </div>
                   </div>
-                </div>
 
-                {teamMatchups.length === 0 ? (
-                  <div style={{ padding: '10px 0', color: 'var(--text-muted)', fontSize: 12 }}>
-                    {t('noSuperEffective', language)}
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {teamMatchups.map(m => {
-                      if (!m) return null
-                      const { pokemon, superEffective, resisted, slotIndex } = m
-                      const name = pokemon.names[language] || pokemon.names.en
-                      return (
-                        <div key={slotIndex} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 3, padding: '8px 10px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                            <img src={pokemon.spriteUrl} alt="" style={{ width: 28, height: 28, imageRendering: 'pixelated' }} />
-                            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
-                            <div style={{ display: 'flex', gap: 3 }}>
-                              {pokemon.types.map(tp => <TypeBadge key={tp} typeName={tp} small />)}
+                  {teamMatchups.length === 0 ? (
+                    <div style={{ padding: '10px 0', color: 'var(--text-muted)', fontSize: 12 }}>
+                      {t('noSuperEffective', language)}
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {teamMatchups.map(m => {
+                        if (!m) return null
+                        const { pokemon, superEffective, resisted, slotIndex } = m
+                        const name = pokemon.names[language] || pokemon.names.en
+                        return (
+                          <div key={slotIndex} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 3, padding: '8px 10px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                              <img src={pokemon.spriteUrl} alt="" style={{ width: 28, height: 28, imageRendering: 'pixelated' }} />
+                              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
+                              <div style={{ display: 'flex', gap: 3 }}>
+                                {pokemon.types.map(tp => <TypeBadge key={tp} typeName={tp} small />)}
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                              {superEffective.map(entry => renderMoveRow(entry, true, language))}
+                              {resisted.length > 0 && superEffective.length > 0 && (
+                                <div style={{ borderTop: '1px solid var(--border)', margin: '3px 0' }} />
+                              )}
+                              {resisted.map(entry => renderMoveRow(entry, false, language))}
                             </div>
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                            {superEffective.map(entry => renderMoveRow(entry, true, language))}
-                            {resisted.length > 0 && superEffective.length > 0 && (
-                              <div style={{ borderTop: '1px solid var(--border)', margin: '3px 0' }} />
-                            )}
-                            {resisted.map(entry => renderMoveRow(entry, false, language))}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
     </div>
