@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { PokemonPicker } from '../TeamBuilder/PokemonPicker'
 import { TypeBadge } from '../TeamBuilder/TypeBadge'
 import { useTeamStore } from '../../store/teamStore'
@@ -21,6 +21,15 @@ export const AnalysisPage: React.FC = () => {
   const pokemonList = useCacheStore(s => s.pokemonList)
   const typeChart = useCacheStore(s => s.typeChart)
   const moveCache = useCacheStore(s => s.moveCache)
+
+  // Pad to always show one full empty row after the last filled slot
+  const displayDefenders = useMemo(() => {
+    const arr = [...defenders]
+    const lastFilled = arr.reduce<number>((acc, v, i) => v !== null ? i : acc, -1)
+    const targetRows = Math.max(1, Math.ceil((lastFilled + 1) / 3) + 1)
+    while (arr.length < targetRows * 3) arr.push(null)
+    return arr
+  }, [defenders])
 
   const canRemove = defenders.length > 3
 
@@ -174,7 +183,7 @@ export const AnalysisPage: React.FC = () => {
 
       {/* 3-col grid, slots in natural order */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, alignItems: 'start' }}>
-        {defenders.map((defId, i) => {
+        {displayDefenders.map((defId, i) => {
           const result = getMatchups(defId)
               const defender = result?.defender ?? null
               const teamMatchups = result?.teamMatchups ?? []

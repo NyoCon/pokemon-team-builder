@@ -94,6 +94,7 @@ export const useTeamStore = create<TeamStore>()(
       setDefenderAt: (index, pokemonId) =>
         set(s => {
           const defenders = [...s.defenders]
+          while (defenders.length <= index) defenders.push(null)
           defenders[index] = pokemonId
           return { defenders }
         }),
