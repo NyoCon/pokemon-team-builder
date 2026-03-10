@@ -71,16 +71,20 @@ function App() {
       <Header />
       {/* Page nav */}
       <div style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-card2)' }}>
-        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 0 }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'center', gap: 0 }}>
           {(['team', 'analyse'] as const).map(page => {
             const labels = { team: t('pageTeam', language), analyse: t('pageAnalyse', language) }
+            const icons  = { team: '⚔', analyse: '🔍' }
             const active = activePage === page
             return (
               <button
                 key={page}
                 onClick={() => setActivePage(page)}
                 style={{
-                  padding: '10px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 7,
+                  padding: '11px 28px',
                   background: 'transparent',
                   border: 'none',
                   borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
@@ -94,6 +98,7 @@ function App() {
                   marginBottom: -1,
                 }}
               >
+                <span style={{ fontSize: 14, lineHeight: 1 }}>{icons[page]}</span>
                 {labels[page]}
               </button>
             )
