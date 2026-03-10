@@ -33,6 +33,7 @@ interface TeamStore {
   setDefenderAt: (index: number, pokemonId: number | null) => void
   addDefender: () => void
   removeDefender: (index: number) => void
+  setDefenders: (ids: (number | null)[]) => void
   setActiveTeam: (team: Team) => void
   resetActiveTeam: () => void
   addToRoster: (entry: Omit<RosterEntry, 'id'>) => void
@@ -103,6 +104,7 @@ export const useTeamStore = create<TeamStore>()(
           if (s.defenders.length <= 1) return {}
           return { defenders: s.defenders.filter((_, i) => i !== index) }
         }),
+      setDefenders: (ids) => set({ defenders: ids.length > 0 ? ids : [null] }),
       setActiveTeam: (activeTeam) => set({ activeTeam }),
       resetActiveTeam: () => set({ activeTeam: makeEmptyTeam() }),
 

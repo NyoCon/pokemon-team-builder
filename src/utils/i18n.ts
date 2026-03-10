@@ -27,6 +27,9 @@ const translations = {
   clearAll:           { en: 'Clear all', de: 'Alle leeren', fr: 'Tout vider', it: 'Svuota tutto', es: 'Vaciar todo' },
   opponent:           { en: 'Opponent', de: 'Gegner', fr: 'Adversaire', it: 'Avversario', es: 'Rival' },
   remove:             { en: 'Remove', de: 'Entfernen', fr: 'Supprimer', it: 'Rimuovi', es: 'Eliminar' },
+  loadTrainer:        { en: 'Load trainer...', de: 'Trainer laden...', fr: 'Charger dresseur...', it: 'Carica allenatore...', es: 'Cargar entrenador...' },
+  gymLeaders:         { en: 'Gym Leaders', de: 'Arenaleiter', fr: 'Champions d\'Arène', it: 'Capopalestra', es: 'Líderes de Gimnasio' },
+  eliteFour:          { en: 'Elite Four', de: 'Top Vier', fr: 'Conseil des Quatre', it: 'Elite Quattro', es: 'Alto Mando' },
 
   // Team manager
   teams:              { en: 'Teams', de: 'Teams', fr: 'Équipes', it: 'Squadre', es: 'Equipos' },

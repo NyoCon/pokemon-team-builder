@@ -6,6 +6,7 @@ import { useCacheStore } from '../../store/cacheStore'
 import { calcDefenderEffectiveness } from '../../utils/effectiveness'
 import { isSTAB } from '../../utils/stab'
 import { t } from '../../utils/i18n'
+import { TRAINERS, GYM_LEADERS, ELITE_FOUR } from '../../data/trainers'
 import type { MoveDetail, Lang } from '../../types'
 
 export const AnalysisPage: React.FC = () => {
@@ -13,6 +14,7 @@ export const AnalysisPage: React.FC = () => {
   const addDefender = useTeamStore(s => s.addDefender)
   const removeDefender = useTeamStore(s => s.removeDefender)
   const setDefenderAt = useTeamStore(s => s.setDefenderAt)
+  const setDefenders = useTeamStore(s => s.setDefenders)
   const activeTeam = useTeamStore(s => s.activeTeam)
   const language = useTeamStore(s => s.language)
 
@@ -111,6 +113,42 @@ export const AnalysisPage: React.FC = () => {
         >
           {t('addOpponent', language)}
         </button>
+      </div>
+
+      {/* Trainer loader */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <select
+          defaultValue=""
+          onChange={e => {
+            const trainer = TRAINERS.find(tr => tr.id === e.target.value)
+            if (trainer) setDefenders(trainer.pokemonIds)
+            e.target.value = ''
+          }}
+          style={{
+            flex: 1,
+            padding: '7px 10px',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: 3,
+            color: 'var(--text-primary)',
+            fontSize: 12,
+            fontFamily: "'Rajdhani', sans-serif",
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          <option value="" disabled>{t('loadTrainer', language)}</option>
+          <optgroup label={t('gymLeaders', language)}>
+            {GYM_LEADERS.map(tr => (
+              <option key={tr.id} value={tr.id}>{tr.names[language] || tr.names.en}</option>
+            ))}
+          </optgroup>
+          <optgroup label={t('eliteFour', language)}>
+            {ELITE_FOUR.map(tr => (
+              <option key={tr.id} value={tr.id}>{tr.names[language] || tr.names.en}</option>
+            ))}
+          </optgroup>
+        </select>
       </div>
 
       {/* 2 independent columns, cards stack vertically per column */}
