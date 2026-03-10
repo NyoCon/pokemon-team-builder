@@ -3,7 +3,7 @@ import type { Lang } from '../types'
 export interface Trainer {
   id: string
   names: Record<Lang, string>
-  group: 'gym' | 'elite4' | 'elite4-rematch' | 'champion' | 'rival' | 'giovanni'
+  group: 'gym' | 'elite4' | 'elite4-rematch' | 'champion' | 'champion-rematch' | 'rival' | 'giovanni'
   pokemonIds: number[]
 }
 
@@ -251,6 +251,25 @@ export const TRAINERS: Trainer[] = [
     group: 'champion',
     pokemonIds: [18, 65, 112, 130, 59, 3], // Pidgeot, Alakazam, Rhydon, Gyarados, Arcanine, Venusaur
   },
+  // ── Champion Blue (Rematch, post-National Dex) ───────────────────
+  {
+    id: 'champion-rematch-char',
+    names: { en: 'Champion Blue – Rematch (vs Charizard)', de: 'Champion Blau – Rückkampf (vs Glurak)', fr: 'Champion Blue – Revanche (vs Dracaufeu)', it: 'Campione Blu – Rivincita (vs Charizard)', es: 'Campeón Azul – Revancha (vs Charizard)' },
+    group: 'champion-rematch',
+    pokemonIds: [214, 65, 248, 103, 130, 6], // Heracross, Alakazam, Tyranitar, Exeggutor, Gyarados, Charizard
+  },
+  {
+    id: 'champion-rematch-blast',
+    names: { en: 'Champion Blue – Rematch (vs Blastoise)', de: 'Champion Blau – Rückkampf (vs Turtok)', fr: 'Champion Blue – Revanche (vs Tortank)', it: 'Campione Blu – Rivincita (vs Blastoise)', es: 'Campeón Azul – Revancha (vs Blastoise)' },
+    group: 'champion-rematch',
+    pokemonIds: [214, 65, 248, 59, 103, 9], // Heracross, Alakazam, Tyranitar, Arcanine, Exeggutor, Blastoise
+  },
+  {
+    id: 'champion-rematch-venu',
+    names: { en: 'Champion Blue – Rematch (vs Venusaur)', de: 'Champion Blau – Rückkampf (vs Bisaflor)', fr: 'Champion Blue – Revanche (vs Florizarre)', it: 'Campione Blu – Rivincita (vs Venusaur)', es: 'Campeón Azul – Revancha (vs Venusaur)' },
+    group: 'champion-rematch',
+    pokemonIds: [214, 65, 248, 130, 59, 3], // Heracross, Alakazam, Tyranitar, Gyarados, Arcanine, Venusaur
+  },
 ]
 
 export const GYM_LEADERS        = TRAINERS.filter(t => t.group === 'gym')
@@ -259,3 +278,4 @@ export const ELITE_FOUR_REMATCH = TRAINERS.filter(t => t.group === 'elite4-remat
 export const GIOVANNI_ENCOUNTERS = TRAINERS.filter(t => t.group === 'giovanni')
 export const RIVAL_BATTLES      = TRAINERS.filter(t => t.group === 'rival')
 export const CHAMPION           = TRAINERS.filter(t => t.group === 'champion')
+export const CHAMPION_REMATCH   = TRAINERS.filter(t => t.group === 'champion-rematch')

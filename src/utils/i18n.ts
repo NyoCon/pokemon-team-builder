@@ -33,6 +33,7 @@ const translations = {
   eliteFourRematch:   { en: 'Elite Four (Rematch)', de: 'Top Vier (Rückkampf)', fr: 'Conseil des Quatre (Revanche)', it: 'Elite Quattro (Rivincita)', es: 'Alto Mando (Revancha)' },
   rivalBattles:       { en: 'Rival', de: 'Rivale', fr: 'Rival', it: 'Rivale', es: 'Rival' },
   champion:           { en: 'Champion', de: 'Champion', fr: 'Champion', it: 'Campione', es: 'Campeón' },
+  championRematch:    { en: 'Champion (Rematch)', de: 'Champion (Rückkampf)', fr: 'Champion (Revanche)', it: 'Campione (Rivincita)', es: 'Campeón (Revancha)' },
   giovanniGroup:      { en: 'Giovanni', de: 'Giovanni', fr: 'Giovanni', it: 'Giovanni', es: 'Giovanni' },
 
   // Team manager
