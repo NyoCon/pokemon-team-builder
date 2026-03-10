@@ -153,7 +153,7 @@ export const AnalysisPage: React.FC = () => {
                     const { pokemon, superEffective, resisted, slotIndex } = m
                     const name = pokemon.names[language] || pokemon.names.en
                     return (
-                      <div key={slotIndex} style={{ borderTop: mi > 0 ? '6px solid var(--bg-deep)' : undefined }}>
+                      <div key={slotIndex} style={{ borderTop: mi > 0 ? '1px solid var(--border)' : undefined, paddingTop: mi > 0 ? 6 : 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: 'var(--bg-card2)' }}>
                           <img src={pokemon.spriteUrl} alt="" style={{ width: 24, height: 24, imageRendering: 'pixelated' }} />
                           <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
