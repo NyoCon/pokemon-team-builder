@@ -100,6 +100,12 @@ export const AnalysisPage: React.FC = () => {
         </span>
         <div style={{ flex: 1 }} />
         <button
+          onClick={() => defenders.forEach((_, i) => setDefenderAt(i, null))}
+          style={{ padding: '6px 14px', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text-muted)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif", cursor: 'pointer', textTransform: 'uppercase' }}
+        >
+          CLEAR ALL
+        </button>
+        <button
           onClick={addDefender}
           style={{ padding: '6px 14px', background: 'rgba(255,77,109,0.08)', border: '1px solid rgba(255,77,109,0.3)', borderRadius: 3, color: 'var(--danger)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif", cursor: 'pointer', textTransform: 'uppercase' }}
         >
@@ -109,10 +115,10 @@ export const AnalysisPage: React.FC = () => {
 
       {/* 2 independent columns, cards stack vertically per column */}
       <div style={{ display: 'flex', gap: 12, alignItems: 'start' }}>
-        {[0, 1].map(col => (
+        {[0, 1, 2].map(col => (
           <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {defenders.map((defId, i) => {
-              if (i % 2 !== col) return null
+              if (i % 3 !== col) return null
               const result = getMatchups(defId)
               const defender = result?.defender ?? null
               const teamMatchups = result?.teamMatchups ?? []
