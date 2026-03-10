@@ -36,6 +36,10 @@ const translations = {
   championRematch:    { en: 'Champion (Rematch)', de: 'Champion (Rückkampf)', fr: 'Champion (Revanche)', it: 'Campione (Rivincita)', es: 'Campeón (Revancha)' },
   giovanniGroup:      { en: 'Giovanni', de: 'Giovanni', fr: 'Giovanni', it: 'Giovanni', es: 'Giovanni' },
 
+  // Page nav
+  pageTeam:           { en: 'Team', de: 'Team', fr: 'Équipe', it: 'Squadra', es: 'Equipo' },
+  pageAnalyse:        { en: 'Analysis', de: 'Analyse', fr: 'Analyse', it: 'Analisi', es: 'Análisis' },
+
   // Team manager
   teams:              { en: 'Teams', de: 'Teams', fr: 'Équipes', it: 'Squadre', es: 'Equipos' },
   shareTeam:          { en: '⬡ Share team', de: '⬡ Team teilen', fr: '⬡ Partager', it: '⬡ Condividi', es: '⬡ Compartir' },

@@ -73,7 +73,7 @@ function App() {
       <div style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-card2)' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 0 }}>
           {(['team', 'analyse'] as const).map(page => {
-            const labels = { team: 'TEAM', analyse: 'ANALYSE' }
+            const labels = { team: t('pageTeam', language), analyse: t('pageAnalyse', language) }
             const active = activePage === page
             return (
               <button
