@@ -49,7 +49,7 @@ export const useTeamStore = create<TeamStore>()(
       teams: {},
       language: 'en',
       theme: 'dark',
-      defenders: [null],
+      defenders: [null, null, null],
       roster: [],
 
       setSlot: (index, pokemonId) =>
@@ -104,7 +104,7 @@ export const useTeamStore = create<TeamStore>()(
           if (s.defenders.length <= 1) return {}
           return { defenders: s.defenders.filter((_, i) => i !== index) }
         }),
-      setDefenders: (ids) => set({ defenders: ids.length > 0 ? ids : [null] }),
+      setDefenders: (ids) => set({ defenders: ids.length > 0 ? ids : [null, null, null] }),
       setActiveTeam: (activeTeam) => set({ activeTeam }),
       resetActiveTeam: () => set({ activeTeam: makeEmptyTeam() }),
 
