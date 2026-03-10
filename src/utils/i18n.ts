@@ -31,6 +31,9 @@ const translations = {
   gymLeaders:         { en: 'Gym Leaders', de: 'Arenaleiter', fr: 'Champions d\'Arène', it: 'Capopalestra', es: 'Líderes de Gimnasio' },
   eliteFour:          { en: 'Elite Four', de: 'Top Vier', fr: 'Conseil des Quatre', it: 'Elite Quattro', es: 'Alto Mando' },
   eliteFourRematch:   { en: 'Elite Four (Rematch)', de: 'Top Vier (Rückkampf)', fr: 'Conseil des Quatre (Revanche)', it: 'Elite Quattro (Rivincita)', es: 'Alto Mando (Revancha)' },
+  rivalBattles:       { en: 'Rival', de: 'Rivale', fr: 'Rival', it: 'Rivale', es: 'Rival' },
+  champion:           { en: 'Champion', de: 'Champion', fr: 'Champion', it: 'Campione', es: 'Campeón' },
+  giovanniGroup:      { en: 'Giovanni', de: 'Giovanni', fr: 'Giovanni', it: 'Giovanni', es: 'Giovanni' },
 
   // Team manager
   teams:              { en: 'Teams', de: 'Teams', fr: 'Équipes', it: 'Squadre', es: 'Equipos' },

@@ -3,7 +3,7 @@ import type { Lang } from '../types'
 export interface Trainer {
   id: string
   names: Record<Lang, string>
-  group: 'gym' | 'elite4' | 'elite4-rematch'
+  group: 'gym' | 'elite4' | 'elite4-rematch' | 'champion' | 'rival' | 'giovanni'
   pokemonIds: number[]
 }
 
@@ -111,8 +111,151 @@ export const TRAINERS: Trainer[] = [
     group: 'elite4-rematch',
     pokemonIds: [130, 149, 230, 142, 149], // Gyarados, Dragonite, Kingdra, Aerodactyl, Dragonite
   },
+
+  // ── Giovanni (non-Gym encounters) ────────────────────────────────
+  {
+    id: 'giovanni-hideout',
+    names: { en: 'Giovanni – Rocket Hideout', de: 'Giovanni – Rocket-Versteck', fr: 'Giovanni – QG Rocket', it: 'Giovanni – Covo Rocket', es: 'Giovanni – Guarida Rocket' },
+    group: 'giovanni',
+    pokemonIds: [95, 111, 115], // Onix, Rhyhorn, Kangaskhan
+  },
+  {
+    id: 'giovanni-silph',
+    names: { en: 'Giovanni – Silph Co.', de: 'Giovanni – Silph AG', fr: 'Giovanni – Silph Co.', it: 'Giovanni – Silph S.p.A.', es: 'Giovanni – Silph S.A.' },
+    group: 'giovanni',
+    pokemonIds: [33, 111, 115, 31], // Nidorino, Rhyhorn, Kangaskhan, Nidoqueen
+  },
+
+  // ── Rival battles (3 variants per key encounter) ─────────────────
+  // Labels show rival's final starter (= counter to player's choice)
+  // "vs Charizard" = player chose Bulbasaur
+  // "vs Blastoise" = player chose Charmander
+  // "vs Venusaur"  = player chose Squirtle
+
+  // Azuria City / Cerulean
+  {
+    id: 'rival-cerulean-char',
+    names: { en: 'Rival – Cerulean (vs Charizard)', de: 'Rivale – Azuria (vs Glurak)', fr: 'Rival – Azuria (vs Dracaufeu)', it: 'Rivale – Celestopoli (vs Charizard)', es: 'Rival – Celeste (vs Charizard)' },
+    group: 'rival',
+    pokemonIds: [17, 63, 19, 4], // Pidgeotto, Abra, Rattata, Charmander
+  },
+  {
+    id: 'rival-cerulean-blast',
+    names: { en: 'Rival – Cerulean (vs Blastoise)', de: 'Rivale – Azuria (vs Turtok)', fr: 'Rival – Azuria (vs Tortank)', it: 'Rivale – Celestopoli (vs Blastoise)', es: 'Rival – Celeste (vs Blastoise)' },
+    group: 'rival',
+    pokemonIds: [17, 63, 19, 7], // Pidgeotto, Abra, Rattata, Squirtle
+  },
+  {
+    id: 'rival-cerulean-venu',
+    names: { en: 'Rival – Cerulean (vs Venusaur)', de: 'Rivale – Azuria (vs Bisaflor)', fr: 'Rival – Azuria (vs Florizarre)', it: 'Rivale – Celestopoli (vs Venusaur)', es: 'Rival – Celeste (vs Venusaur)' },
+    group: 'rival',
+    pokemonIds: [17, 63, 19, 1], // Pidgeotto, Abra, Rattata, Bulbasaur
+  },
+
+  // S.S. Anne
+  {
+    id: 'rival-anne-char',
+    names: { en: 'Rival – S.S. Anne (vs Charizard)', de: 'Rivale – S.S. Anne (vs Glurak)', fr: 'Rival – S.S. Anne (vs Dracaufeu)', it: 'Rivale – N. S. Anna (vs Charizard)', es: 'Rival – S.S. Anne (vs Charizard)' },
+    group: 'rival',
+    pokemonIds: [17, 20, 64, 5], // Pidgeotto, Raticate, Kadabra, Charmeleon
+  },
+  {
+    id: 'rival-anne-blast',
+    names: { en: 'Rival – S.S. Anne (vs Blastoise)', de: 'Rivale – S.S. Anne (vs Turtok)', fr: 'Rival – S.S. Anne (vs Tortank)', it: 'Rivale – N. S. Anna (vs Blastoise)', es: 'Rival – S.S. Anne (vs Blastoise)' },
+    group: 'rival',
+    pokemonIds: [17, 20, 64, 8], // Pidgeotto, Raticate, Kadabra, Wartortle
+  },
+  {
+    id: 'rival-anne-venu',
+    names: { en: 'Rival – S.S. Anne (vs Venusaur)', de: 'Rivale – S.S. Anne (vs Bisaflor)', fr: 'Rival – S.S. Anne (vs Florizarre)', it: 'Rivale – N. S. Anna (vs Venusaur)', es: 'Rival – S.S. Anne (vs Venusaur)' },
+    group: 'rival',
+    pokemonIds: [17, 20, 64, 2], // Pidgeotto, Raticate, Kadabra, Ivysaur
+  },
+
+  // Pokémon Tower (Lavender)
+  {
+    id: 'rival-lavender-char',
+    names: { en: 'Rival – Lavender Tower (vs Charizard)', de: 'Rivale – Lavandia-Turm (vs Glurak)', fr: 'Rival – Tour Lavanville (vs Dracaufeu)', it: 'Rivale – Torre Lavanda (vs Charizard)', es: 'Rival – Torre Lavanda (vs Charizard)' },
+    group: 'rival',
+    pokemonIds: [17, 102, 130, 64, 5], // Pidgeotto, Exeggcute, Gyarados, Kadabra, Charmeleon
+  },
+  {
+    id: 'rival-lavender-blast',
+    names: { en: 'Rival – Lavender Tower (vs Blastoise)', de: 'Rivale – Lavandia-Turm (vs Turtok)', fr: 'Rival – Tour Lavanville (vs Tortank)', it: 'Rivale – Torre Lavanda (vs Blastoise)', es: 'Rival – Torre Lavanda (vs Blastoise)' },
+    group: 'rival',
+    pokemonIds: [17, 58, 102, 64, 8], // Pidgeotto, Growlithe, Exeggcute, Kadabra, Wartortle
+  },
+  {
+    id: 'rival-lavender-venu',
+    names: { en: 'Rival – Lavender Tower (vs Venusaur)', de: 'Rivale – Lavandia-Turm (vs Bisaflor)', fr: 'Rival – Tour Lavanville (vs Florizarre)', it: 'Rivale – Torre Lavanda (vs Venusaur)', es: 'Rival – Torre Lavanda (vs Venusaur)' },
+    group: 'rival',
+    pokemonIds: [17, 130, 58, 64, 2], // Pidgeotto, Gyarados, Growlithe, Kadabra, Ivysaur
+  },
+
+  // Silph Co.
+  {
+    id: 'rival-silph-char',
+    names: { en: 'Rival – Silph Co. (vs Charizard)', de: 'Rivale – Silph AG (vs Glurak)', fr: 'Rival – Silph Co. (vs Dracaufeu)', it: 'Rivale – Silph S.p.A. (vs Charizard)', es: 'Rival – Silph S.A. (vs Charizard)' },
+    group: 'rival',
+    pokemonIds: [18, 102, 130, 65, 6], // Pidgeot, Exeggcute, Gyarados, Alakazam, Charizard
+  },
+  {
+    id: 'rival-silph-blast',
+    names: { en: 'Rival – Silph Co. (vs Blastoise)', de: 'Rivale – Silph AG (vs Turtok)', fr: 'Rival – Silph Co. (vs Tortank)', it: 'Rivale – Silph S.p.A. (vs Blastoise)', es: 'Rival – Silph S.A. (vs Blastoise)' },
+    group: 'rival',
+    pokemonIds: [18, 102, 130, 65, 9], // Pidgeot, Exeggcute, Gyarados, Alakazam, Blastoise
+  },
+  {
+    id: 'rival-silph-venu',
+    names: { en: 'Rival – Silph Co. (vs Venusaur)', de: 'Rivale – Silph AG (vs Bisaflor)', fr: 'Rival – Silph Co. (vs Florizarre)', it: 'Rivale – Silph S.p.A. (vs Venusaur)', es: 'Rival – Silph S.A. (vs Venusaur)' },
+    group: 'rival',
+    pokemonIds: [18, 102, 59, 65, 3], // Pidgeot, Exeggcute, Arcanine, Alakazam, Venusaur
+  },
+
+  // Route 22 (pre-Elite Four)
+  {
+    id: 'rival-route22-char',
+    names: { en: 'Rival – Route 22 (vs Charizard)', de: 'Rivale – Route 22 (vs Glurak)', fr: 'Rival – Route 22 (vs Dracaufeu)', it: 'Rivale – Percorso 22 (vs Charizard)', es: 'Rival – Ruta 22 (vs Charizard)' },
+    group: 'rival',
+    pokemonIds: [18, 111, 102, 130, 65, 6], // Pidgeot, Rhyhorn, Exeggcute, Gyarados, Alakazam, Charizard
+  },
+  {
+    id: 'rival-route22-blast',
+    names: { en: 'Rival – Route 22 (vs Blastoise)', de: 'Rivale – Route 22 (vs Turtok)', fr: 'Rival – Route 22 (vs Tortank)', it: 'Rivale – Percorso 22 (vs Blastoise)', es: 'Rival – Ruta 22 (vs Blastoise)' },
+    group: 'rival',
+    pokemonIds: [18, 111, 58, 102, 65, 9], // Pidgeot, Rhyhorn, Growlithe, Exeggcute, Alakazam, Blastoise
+  },
+  {
+    id: 'rival-route22-venu',
+    names: { en: 'Rival – Route 22 (vs Venusaur)', de: 'Rivale – Route 22 (vs Bisaflor)', fr: 'Rival – Route 22 (vs Florizarre)', it: 'Rivale – Percorso 22 (vs Venusaur)', es: 'Rival – Ruta 22 (vs Venusaur)' },
+    group: 'rival',
+    pokemonIds: [18, 111, 130, 59, 65, 3], // Pidgeot, Rhyhorn, Gyarados, Arcanine, Alakazam, Venusaur
+  },
+
+  // ── Champion Blue ─────────────────────────────────────────────────
+  {
+    id: 'champion-char',
+    names: { en: 'Champion Blue (vs Charizard)', de: 'Champion Blau (vs Glurak)', fr: 'Champion Blue (vs Dracaufeu)', it: 'Campione Blu (vs Charizard)', es: 'Campeón Azul (vs Charizard)' },
+    group: 'champion',
+    pokemonIds: [18, 65, 112, 103, 130, 6], // Pidgeot, Alakazam, Rhydon, Exeggutor, Gyarados, Charizard
+  },
+  {
+    id: 'champion-blast',
+    names: { en: 'Champion Blue (vs Blastoise)', de: 'Champion Blau (vs Turtok)', fr: 'Champion Blue (vs Tortank)', it: 'Campione Blu (vs Blastoise)', es: 'Campeón Azul (vs Blastoise)' },
+    group: 'champion',
+    pokemonIds: [18, 65, 112, 59, 103, 9], // Pidgeot, Alakazam, Rhydon, Arcanine, Exeggutor, Blastoise
+  },
+  {
+    id: 'champion-venu',
+    names: { en: 'Champion Blue (vs Venusaur)', de: 'Champion Blau (vs Bisaflor)', fr: 'Champion Blue (vs Florizarre)', it: 'Campione Blu (vs Venusaur)', es: 'Campeón Azul (vs Venusaur)' },
+    group: 'champion',
+    pokemonIds: [18, 65, 112, 130, 59, 3], // Pidgeot, Alakazam, Rhydon, Gyarados, Arcanine, Venusaur
+  },
 ]
 
-export const GYM_LEADERS     = TRAINERS.filter(t => t.group === 'gym')
-export const ELITE_FOUR      = TRAINERS.filter(t => t.group === 'elite4')
+export const GYM_LEADERS        = TRAINERS.filter(t => t.group === 'gym')
+export const ELITE_FOUR         = TRAINERS.filter(t => t.group === 'elite4')
 export const ELITE_FOUR_REMATCH = TRAINERS.filter(t => t.group === 'elite4-rematch')
+export const GIOVANNI_ENCOUNTERS = TRAINERS.filter(t => t.group === 'giovanni')
+export const RIVAL_BATTLES      = TRAINERS.filter(t => t.group === 'rival')
+export const CHAMPION           = TRAINERS.filter(t => t.group === 'champion')
