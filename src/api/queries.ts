@@ -81,15 +81,35 @@ export async function fetchPokemonMoves(pokemonId: number): Promise<number[]> {
   return moveIds
 }
 
+// Version groups from Gen 4 onward — anything before these is FR/LG era or earlier
+const GEN4_PLUS_GROUPS = new Set([
+  'diamond-pearl', 'platinum', 'heartgold-soulsilver',
+  'black-white', 'black-2-white-2',
+  'x-y', 'omega-ruby-alpha-sapphire',
+  'sun-moon', 'ultra-sun-ultra-moon',
+  'sword-shield', 'the-isle-of-armor', 'the-crown-tundra',
+  'scarlet-violet',
+])
+
 export async function fetchMoveDetail(moveId: number): Promise<MoveDetail> {
   const data = await cachedFetch<any>(`poke:move:${moveId}`, `${BASE}/move/${moveId}`)
 
   const names = extractNames(data.names)
   const typeId = data.type?.name ?? 'normal'
-  const power: number | null = data.power ?? null
   const pp: number | null = data.pp ?? null
   const accuracy: number | null = data.accuracy ?? null
   const damageClass: MoveDetail['damageClass'] = data.damage_class?.name ?? 'status'
+
+  // Use Gen 3 era power if the move was changed in Gen 4+.
+  // past_values entries whose version_group is Gen 4+ represent the value
+  // that was in effect during FR/LG (Gen 3) and earlier.
+  let power: number | null = data.power ?? null
+  if (Array.isArray(data.past_values)) {
+    const frlgEra = data.past_values.find(
+      (pv: any) => GEN4_PLUS_GROUPS.has(pv.version_group?.name) && pv.power != null
+    )
+    if (frlgEra) power = frlgEra.power
+  }
 
   return { id: moveId, names, type: typeId, power, pp, accuracy, damageClass }
 }
