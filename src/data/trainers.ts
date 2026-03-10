@@ -3,7 +3,7 @@ import type { Lang } from '../types'
 export interface Trainer {
   id: string
   names: Record<Lang, string>
-  group: 'gym' | 'elite4'
+  group: 'gym' | 'elite4' | 'elite4-rematch'
   pokemonIds: number[]
 }
 
@@ -85,7 +85,34 @@ export const TRAINERS: Trainer[] = [
     group: 'elite4',
     pokemonIds: [130, 148, 148, 142, 149], // Gyarados, Dragonair, Dragonair, Aerodactyl, Dragonite
   },
+
+  // ── Elite Four Rematch (post-National Dex) ──────────────────────
+  {
+    id: 'lorelei-rematch',
+    names: { en: 'Lorelei', de: 'Lorelei', fr: 'Lorelei', it: 'Lorelei', es: 'Lorelei' },
+    group: 'elite4-rematch',
+    pokemonIds: [87, 91, 221, 124, 131], // Dewgong, Cloyster, Piloswine, Jynx, Lapras
+  },
+  {
+    id: 'bruno-rematch',
+    names: { en: 'Bruno', de: 'Bruno', fr: 'Bruno', it: 'Bruno', es: 'Bruno' },
+    group: 'elite4-rematch',
+    pokemonIds: [208, 107, 106, 208, 68], // Steelix, Hitmonchan, Hitmonlee, Steelix, Machamp
+  },
+  {
+    id: 'agatha-rematch',
+    names: { en: 'Agatha', de: 'Agathe', fr: 'Agatha', it: 'Agatha', es: 'Agatha' },
+    group: 'elite4-rematch',
+    pokemonIds: [94, 169, 200, 24, 94], // Gengar, Crobat, Misdreavus, Arbok, Gengar
+  },
+  {
+    id: 'lance-rematch',
+    names: { en: 'Lance', de: 'Siegfried', fr: 'Peter', it: 'Luca', es: 'Bruno' },
+    group: 'elite4-rematch',
+    pokemonIds: [130, 149, 230, 142, 149], // Gyarados, Dragonite, Kingdra, Aerodactyl, Dragonite
+  },
 ]
 
-export const GYM_LEADERS = TRAINERS.filter(t => t.group === 'gym')
-export const ELITE_FOUR   = TRAINERS.filter(t => t.group === 'elite4')
+export const GYM_LEADERS     = TRAINERS.filter(t => t.group === 'gym')
+export const ELITE_FOUR      = TRAINERS.filter(t => t.group === 'elite4')
+export const ELITE_FOUR_REMATCH = TRAINERS.filter(t => t.group === 'elite4-rematch')

@@ -30,6 +30,7 @@ const translations = {
   loadTrainer:        { en: 'Load trainer...', de: 'Trainer laden...', fr: 'Charger dresseur...', it: 'Carica allenatore...', es: 'Cargar entrenador...' },
   gymLeaders:         { en: 'Gym Leaders', de: 'Arenaleiter', fr: 'Champions d\'Arène', it: 'Capopalestra', es: 'Líderes de Gimnasio' },
   eliteFour:          { en: 'Elite Four', de: 'Top Vier', fr: 'Conseil des Quatre', it: 'Elite Quattro', es: 'Alto Mando' },
+  eliteFourRematch:   { en: 'Elite Four (Rematch)', de: 'Top Vier (Rückkampf)', fr: 'Conseil des Quatre (Revanche)', it: 'Elite Quattro (Rivincita)', es: 'Alto Mando (Revancha)' },
 
   // Team manager
   teams:              { en: 'Teams', de: 'Teams', fr: 'Équipes', it: 'Squadre', es: 'Equipos' },

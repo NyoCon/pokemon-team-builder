@@ -6,7 +6,7 @@ import { useCacheStore } from '../../store/cacheStore'
 import { calcDefenderEffectiveness } from '../../utils/effectiveness'
 import { isSTAB } from '../../utils/stab'
 import { t } from '../../utils/i18n'
-import { TRAINERS, GYM_LEADERS, ELITE_FOUR } from '../../data/trainers'
+import { TRAINERS, GYM_LEADERS, ELITE_FOUR, ELITE_FOUR_REMATCH } from '../../data/trainers'
 import type { MoveDetail, Lang } from '../../types'
 
 export const AnalysisPage: React.FC = () => {
@@ -145,6 +145,11 @@ export const AnalysisPage: React.FC = () => {
           </optgroup>
           <optgroup label={t('eliteFour', language)}>
             {ELITE_FOUR.map(tr => (
+              <option key={tr.id} value={tr.id}>{tr.names[language] || tr.names.en}</option>
+            ))}
+          </optgroup>
+          <optgroup label={t('eliteFourRematch', language)}>
+            {ELITE_FOUR_REMATCH.map(tr => (
               <option key={tr.id} value={tr.id}>{tr.names[language] || tr.names.en}</option>
             ))}
           </optgroup>

@@ -18,14 +18,14 @@ function extractNames(namesArr: Array<{ name: string; language: { name: string }
 }
 
 export async function fetchAllPokemon(): Promise<PokemonSummary[]> {
-  const cacheKey = 'poke:list:frlg'
+  const cacheKey = 'poke:list:frlg:251'
   const cached = localStorage.getItem(cacheKey)
   if (cached) {
     try { return JSON.parse(cached) } catch { /* fall through */ }
   }
 
-  // FR/LG pokedex: pokemon 1-151
-  const ids = Array.from({ length: 151 }, (_, i) => i + 1)
+  // FR/LG: Kanto (1-151) + obtainable Gen 2 Pokémon on Sevii Islands (post-National Dex)
+  const ids = Array.from({ length: 251 }, (_, i) => i + 1)
 
   const results = await Promise.all(
     ids.map(async id => {
