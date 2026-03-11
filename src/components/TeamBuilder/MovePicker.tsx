@@ -180,6 +180,25 @@ export const MovePicker: React.FC<Props> = ({ value, pokemonId, onChange }) => {
                 {learnableOnly ? '★' : '☆'} Lernbar
               </button>
             )}
+            {(search || filterType || learnableOnly) && (
+              <button
+                onClick={() => { setSearch(''); setFilterType(null); setLearnableOnly(false) }}
+                title="Filter zurücksetzen"
+                style={{
+                  height: 26,
+                  padding: '0 6px',
+                  background: 'transparent',
+                  border: '1px solid var(--border)',
+                  borderRadius: 2,
+                  color: 'var(--text-muted)',
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                  boxSizing: 'border-box',
+                  lineHeight: 1,
+                }}
+              >×</button>
+            )}
           </div>
 
           {/* Move list */}
