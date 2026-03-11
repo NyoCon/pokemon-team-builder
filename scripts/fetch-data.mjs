@@ -37,7 +37,7 @@ const FRLG_GROUPS = new Set([
   'ruby-sapphire', 'emerald',
 ])
 
-const LEARNABLE_METHODS = new Set(['level-up', 'machine', 'egg'])
+const LEARNABLE_METHODS = new Set(['level-up', 'machine', 'egg', 'tutor'])
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
