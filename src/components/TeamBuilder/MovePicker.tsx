@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { useCacheStore } from '../../store/cacheStore'
 import { useTeamStore } from '../../store/teamStore'
 import { TypeBadge } from './TypeBadge'
-import { fetchMoveDetail } from '../../api/queries'
 import { t } from '../../utils/i18n'
 
 interface Props {
@@ -20,22 +19,6 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
   const language = useTeamStore(s => s.language)
   const moveCache = useCacheStore(s => s.moveCache)
   const allMoveIds = useCacheStore(s => s.allMoveIds)
-  const addMovesToCache = useCacheStore(s => s.addMovesToCache)
-
-  // When picker opens, fetch any moves not yet in cache
-  useEffect(() => {
-    if (!open || !allMoveIds.length) return
-    const missing = allMoveIds.filter(id => !moveCache[id])
-    if (!missing.length) return
-    // Fetch in parallel batches of 50 to avoid flooding
-    const BATCH = 50
-    for (let i = 0; i < missing.length; i += BATCH) {
-      const batch = missing.slice(i, i + BATCH)
-      Promise.all(batch.map(id => fetchMoveDetail(id))).then(moves => {
-        addMovesToCache(moves)
-      })
-    }
-  }, [open, allMoveIds.length])
 
   const selected = value ? moveCache[value] : null
   const displayName = selected ? (selected.names[language] || selected.names.en) : null
@@ -76,7 +59,7 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
     onChange(null)
   }
 
-  const isLoading = allMoveIds.length > 0 && cachedMoves.length < allMoveIds.length
+  const isLoading = allMoveIds.length === 0
 
   return (
     <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
@@ -132,9 +115,7 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
               style={{ flex: 1, padding: '4px 6px', fontSize: 11, borderRadius: 2 }}
             />
             {isLoading && (
-              <span style={{ color: 'var(--text-muted)', fontSize: 10, whiteSpace: 'nowrap' }}>
-                {cachedMoves.length}/{allMoveIds.length}
-              </span>
+              <span style={{ color: 'var(--text-muted)', fontSize: 10, whiteSpace: 'nowrap' }}>…</span>
             )}
           </div>
           <div style={{ overflowY: 'auto', flex: 1 }}>
