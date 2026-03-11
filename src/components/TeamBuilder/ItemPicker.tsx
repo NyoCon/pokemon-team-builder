@@ -26,7 +26,10 @@ export const ItemPicker: React.FC<Props> = ({ value, onChange }) => {
     if (!open) return
     const missing = FRLG_ITEM_SLUGS.filter(slug => !itemCache[slug])
     if (!missing.length) return
-    Promise.all(missing.map(slug => fetchItemDetail(slug))).then(items => addItemsToCache(items))
+    Promise.allSettled(missing.map(slug => fetchItemDetail(slug))).then(results => {
+      const items = results.flatMap(r => r.status === 'fulfilled' ? [r.value] : [])
+      if (items.length) addItemsToCache(items)
+    })
   }, [open])
 
   useEffect(() => {

@@ -26,7 +26,7 @@ export const FRLG_ITEM_SLUGS: string[] = [
   'kings-rock',
   'focus-band',
   'quick-claw',
-  'brightpowder',
+  'bright-powder',
   'lax-incense',
   'white-herb',
   // Status berries
@@ -52,7 +52,7 @@ export const FRLG_ITEM_SLUGS: string[] = [
   'thick-club',
   'light-ball',
   'lucky-punch',
-  'stick',
+  'leek',
   'deep-sea-tooth',
   'deep-sea-scale',
   'metal-powder',
