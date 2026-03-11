@@ -126,49 +126,21 @@ export const MovePicker: React.FC<Props> = ({ value, pokemonId, onChange }) => {
             boxShadow: '0 8px 24px rgba(0,0,0,0.7)',
           }}
         >
-          {/* Search row */}
-          <div style={{ padding: '5px 6px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          {/* Search + type filter + learnable — single row */}
+          <div style={{ padding: '5px 6px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 4 }}>
             <input
               ref={inputRef}
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder={t('searchMove', language)}
-              style={{ flex: 1, padding: '4px 6px', fontSize: 11, borderRadius: 2 }}
+              style={{ flex: 1, minWidth: 0, padding: '3px 6px', fontSize: 11, borderRadius: 2 }}
             />
-            {isLoading && (
-              <span style={{ color: 'var(--text-muted)', fontSize: 10, whiteSpace: 'nowrap' }}>…</span>
-            )}
-            {learnset && (
-              <button
-                onClick={() => setLearnableOnly(v => !v)}
-                title={learnableOnly ? 'Alle Attacken' : 'Nur lernbare Attacken'}
-                style={{
-                  padding: '3px 7px',
-                  background: learnableOnly ? 'rgba(99,102,241,0.2)' : 'transparent',
-                  border: `1px solid ${learnableOnly ? 'rgba(99,102,241,0.6)' : 'var(--border)'}`,
-                  borderRadius: 2,
-                  color: learnableOnly ? '#818cf8' : 'var(--text-muted)',
-                  fontSize: 10,
-                  fontWeight: 700,
-                  fontFamily: "'Rajdhani', sans-serif",
-                  letterSpacing: '0.05em',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {learnableOnly ? '★ Lernbar' : '☆ Lernbar'}
-              </button>
-            )}
-          </div>
-
-          {/* Type filter dropdown */}
-          <div style={{ padding: '4px 6px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+            {isLoading && <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>…</span>}
             <select
               value={filterType ?? ''}
               onChange={e => setFilterType(e.target.value || null)}
               style={{
-                width: '100%',
-                padding: '3px 6px',
+                padding: '3px 5px',
                 background: 'var(--bg-deep)',
                 border: `1px solid ${filterType ? (TYPE_COLORS[filterType]?.text ?? 'var(--border)') : 'var(--border)'}`,
                 borderRadius: 2,
@@ -177,15 +149,35 @@ export const MovePicker: React.FC<Props> = ({ value, pokemonId, onChange }) => {
                 fontFamily: "'Rajdhani', sans-serif",
                 fontWeight: 700,
                 cursor: 'pointer',
+                flexShrink: 0,
               }}
             >
-              <option value="">— Alle Typen —</option>
+              <option value="">Typ</option>
               {availableTypes.map(type => (
-                <option key={type} value={type} style={{ textTransform: 'capitalize' }}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </option>
+                <option key={type} value={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</option>
               ))}
             </select>
+            {learnset && (
+              <button
+                onClick={() => setLearnableOnly(v => !v)}
+                title={learnableOnly ? 'Alle Attacken' : 'Nur lernbare Attacken'}
+                style={{
+                  padding: '3px 6px',
+                  background: learnableOnly ? 'rgba(99,102,241,0.2)' : 'transparent',
+                  border: `1px solid ${learnableOnly ? 'rgba(99,102,241,0.6)' : 'var(--border)'}`,
+                  borderRadius: 2,
+                  color: learnableOnly ? '#818cf8' : 'var(--text-muted)',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  fontFamily: "'Rajdhani', sans-serif",
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                {learnableOnly ? '★' : '☆'} Lernbar
+              </button>
+            )}
           </div>
 
           {/* Move list */}
