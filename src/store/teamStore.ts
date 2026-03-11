@@ -150,7 +150,7 @@ export const useTeamStore = create<TeamStore>()(
           const entry = s.roster.find(e => e.id === entryId)
           if (!entry) return {}
           const slots = [...s.activeTeam.slots] as Team['slots']
-          slots[slotIndex] = { pokemonId: entry.pokemonId, moveIds: [...entry.moveIds] as TeamSlot['moveIds'] }
+          slots[slotIndex] = { pokemonId: entry.pokemonId, moveIds: [...entry.moveIds] as TeamSlot['moveIds'], nature: entry.nature, evs: entry.evs }
           return { activeTeam: { slots } }
         }),
     }),

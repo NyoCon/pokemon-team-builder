@@ -86,4 +86,6 @@ export interface RosterEntry {
   label: string
   pokemonId: number
   moveIds: [number | null, number | null, number | null, number | null]
+  nature?: string
+  evs?: EVs
 }

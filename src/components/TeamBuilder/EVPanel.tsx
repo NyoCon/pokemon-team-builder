@@ -17,40 +17,72 @@ const EV_STATS: Array<{ key: keyof EVs; labelKey: 'statHp' | 'statAtk' | 'statDe
   { key: 'spe',   labelKey: 'statSpe' },
 ]
 
-interface Props {
-  slotIndex: number
-  language: Lang
+function clampEV(evs: EVs, key: keyof EVs, raw: string): EVs {
+  let val = parseInt(raw, 10)
+  if (isNaN(val) || val < 0) val = 0
+  if (val > MAX_SINGLE) val = MAX_SINGLE
+  const total = Object.values(evs).reduce((s, v) => s + v, 0)
+  const remaining = MAX_TOTAL - total + evs[key]
+  if (val > remaining) val = remaining
+  return { ...evs, [key]: val }
 }
 
-export const EVPanel: React.FC<Props> = ({ slotIndex, language }) => {
-  const slot = useTeamStore(s => s.activeTeam.slots[slotIndex])
-  const setNature = useTeamStore(s => s.setNature)
-  const setEVs = useTeamStore(s => s.setEVs)
+// Slot-connected mode
+interface SlotProps {
+  slotIndex: number
+  language: Lang
+  nature?: never
+  evs?: never
+  onChangeNature?: never
+  onChangeEvs?: never
+}
 
-  const evs: EVs = slot.evs ?? { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, spe: 0 }
-  const totalEvs = Object.values(evs).reduce((s, v) => s + v, 0)
-  const remaining = MAX_TOTAL - totalEvs
+// Standalone mode (for roster edit form)
+interface StandaloneProps {
+  slotIndex?: never
+  language: Lang
+  nature: string | undefined
+  evs: EVs
+  onChangeNature: (nature: string | undefined) => void
+  onChangeEvs: (evs: EVs) => void
+}
 
-  const nature = slot.nature ? NATURE_BY_ID[slot.nature] : null
+type Props = SlotProps | StandaloneProps
 
-  const handleEV = (key: keyof EVs, raw: string) => {
-    let val = parseInt(raw, 10)
-    if (isNaN(val) || val < 0) val = 0
-    if (val > MAX_SINGLE) val = MAX_SINGLE
-    const newTotal = totalEvs - evs[key] + val
-    if (newTotal > MAX_TOTAL) val = evs[key] + remaining
-    setEVs(slotIndex, { ...evs, [key]: val })
+export const EVPanel: React.FC<Props> = (props) => {
+  const { language } = props
+
+  // Slot-connected
+  const slot = useTeamStore(s => props.slotIndex != null ? s.activeTeam.slots[props.slotIndex] : null)
+  const setNatureStore = useTeamStore(s => s.setNature)
+  const setEVsStore = useTeamStore(s => s.setEVs)
+
+  const nature = props.slotIndex != null ? slot?.nature : props.nature
+  const evs: EVs = (props.slotIndex != null ? slot?.evs : props.evs) ?? { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, spe: 0 }
+
+  const handleNature = (val: string | undefined) => {
+    if (props.slotIndex != null) setNatureStore(props.slotIndex, val)
+    else props.onChangeNature!(val)
+  }
+  const handleEvs = (newEvs: EVs) => {
+    if (props.slotIndex != null) setEVsStore(props.slotIndex, newEvs)
+    else props.onChangeEvs!(newEvs)
   }
 
+  const totalEvs = Object.values(evs).reduce((s, v) => s + v, 0)
+  const natureObj = nature ? NATURE_BY_ID[nature] : null
+
   const statColor = (key: keyof EVs) => {
-    if (!nature) return 'var(--text-primary)'
-    if (key === 'hp') return 'var(--text-primary)'
-    if (nature.plus === key) return '#4ade80'
-    if (nature.minus === key) return '#f97316'
+    if (!natureObj || key === 'hp') return 'var(--text-primary)'
+    if (natureObj.plus === key) return '#4ade80'
+    if (natureObj.minus === key) return '#f97316'
     return 'var(--text-primary)'
   }
 
   const totalColor = totalEvs > MAX_TOTAL ? '#ef4444' : totalEvs === MAX_TOTAL ? '#4ade80' : 'var(--text-muted)'
+
+  const statSuffix = (key: string) =>
+    key === 'spatk' ? 'SpA' : key === 'spdef' ? 'SpD' : key.charAt(0).toUpperCase() + key.slice(1)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '8px', background: 'rgba(0,0,0,0.15)', borderRadius: 3, border: '1px solid var(--border)' }}>
@@ -60,8 +92,8 @@ export const EVPanel: React.FC<Props> = ({ slotIndex, language }) => {
           {t('nature', language).toUpperCase()}
         </span>
         <select
-          value={slot.nature ?? ''}
-          onChange={e => setNature(slotIndex, e.target.value || undefined)}
+          value={nature ?? ''}
+          onChange={e => handleNature(e.target.value || undefined)}
           style={{
             flex: 1,
             padding: '3px 6px',
@@ -78,17 +110,15 @@ export const EVPanel: React.FC<Props> = ({ slotIndex, language }) => {
           <option value="">{t('noNature', language)}</option>
           {NATURES.map(n => {
             const name = n.names[language] || n.names.en
-            const suffix = n.plus ? ` (+${n.plus === 'spatk' ? 'SpAtk' : n.plus === 'spdef' ? 'SpDef' : n.plus.charAt(0).toUpperCase() + n.plus.slice(1)} / -${n.minus === 'spatk' ? 'SpAtk' : n.minus === 'spdef' ? 'SpDef' : (n.minus?.charAt(0).toUpperCase() ?? '') + (n.minus?.slice(1) ?? '')})` : ''
-            return (
-              <option key={n.id} value={n.id}>{name}{suffix}</option>
-            )
+            const suffix = n.plus ? ` (+${statSuffix(n.plus)} / -${statSuffix(n.minus!)})` : ''
+            return <option key={n.id} value={n.id}>{name}{suffix}</option>
           })}
         </select>
-        {nature && nature.plus && (
+        {natureObj?.plus && (
           <span style={{ fontSize: 10, fontFamily: "'Share Tech Mono', monospace", whiteSpace: 'nowrap' }}>
-            <span style={{ color: '#4ade80' }}>+{nature.plus === 'spatk' ? 'SpA' : nature.plus === 'spdef' ? 'SpD' : nature.plus.charAt(0).toUpperCase() + nature.plus.slice(1)}</span>
+            <span style={{ color: '#4ade80' }}>+{statSuffix(natureObj.plus)}</span>
             <span style={{ color: 'var(--text-muted)' }}>/</span>
-            <span style={{ color: '#f97316' }}>-{nature.minus === 'spatk' ? 'SpA' : nature.minus === 'spdef' ? 'SpD' : (nature.minus?.charAt(0).toUpperCase() ?? '') + (nature.minus?.slice(1) ?? '')}</span>
+            <span style={{ color: '#f97316' }}>-{statSuffix(natureObj.minus!)}</span>
           </span>
         )}
       </div>
@@ -97,7 +127,7 @@ export const EVPanel: React.FC<Props> = ({ slotIndex, language }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px 8px' }}>
         {EV_STATS.map(({ key, labelKey }) => (
           <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: statColor(key as any), fontFamily: "'Share Tech Mono', monospace", minWidth: 30, letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: statColor(key), fontFamily: "'Share Tech Mono', monospace", minWidth: 30, letterSpacing: '0.05em' }}>
               {t(labelKey, language)}
             </span>
             <input
@@ -105,14 +135,14 @@ export const EVPanel: React.FC<Props> = ({ slotIndex, language }) => {
               min={0}
               max={MAX_SINGLE}
               value={evs[key]}
-              onChange={e => handleEV(key, e.target.value)}
+              onChange={e => handleEvs(clampEV(evs, key, e.target.value))}
               style={{
                 width: '100%',
                 padding: '2px 4px',
                 background: 'var(--bg-card)',
                 border: `1px solid ${evs[key] === MAX_SINGLE ? 'rgba(74,222,128,0.4)' : 'var(--border)'}`,
                 borderRadius: 2,
-                color: statColor(key as any),
+                color: statColor(key),
                 fontSize: 12,
                 fontFamily: "'Share Tech Mono', monospace",
                 textAlign: 'right',

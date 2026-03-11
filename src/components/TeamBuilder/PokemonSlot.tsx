@@ -74,7 +74,7 @@ export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
           {advancedMode && <EVPanel slotIndex={slotIndex} language={language} />}
           <button
             onClick={() => {
-              addToRoster({ label: '', pokemonId: pokemon.id, moveIds: [...slot.moveIds] })
+              addToRoster({ label: '', pokemonId: pokemon.id, moveIds: [...slot.moveIds], nature: slot.nature, evs: slot.evs })
               setSavedToBox(true)
               setTimeout(() => setSavedToBox(false), 1500)
             }}

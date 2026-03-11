@@ -4,11 +4,15 @@ import { useCacheStore } from '../../store/cacheStore'
 import { TypeBadge } from '../TeamBuilder/TypeBadge'
 import { MovePicker } from '../TeamBuilder/MovePicker'
 import { PokemonPicker } from '../TeamBuilder/PokemonPicker'
+import { EVPanel } from '../TeamBuilder/EVPanel'
+import { NATURE_BY_ID } from '../../data/natures'
 import { t } from '../../utils/i18n'
-import type { RosterEntry } from '../../types'
+import type { RosterEntry, EVs } from '../../types'
+
+const EMPTY_EVS: EVs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, spe: 0 }
 
 export const RosterPanel: React.FC = () => {
-  const { roster, addToRoster, updateRosterEntry, removeFromRoster, assignFromRoster, language } = useTeamStore()
+  const { roster, addToRoster, updateRosterEntry, removeFromRoster, assignFromRoster, language, advancedMode } = useTeamStore()
   const pokemonList = useCacheStore(s => s.pokemonList)
   const moveCache = useCacheStore(s => s.moveCache)
 
@@ -22,13 +26,13 @@ export const RosterPanel: React.FC = () => {
   })
 
   function openNew() {
-    setDraft({ label: '', pokemonId: 0, moveIds: [null, null, null, null] })
+    setDraft({ label: '', pokemonId: 0, moveIds: [null, null, null, null], nature: undefined, evs: undefined })
     setEditingId('new')
     setAssigningId(null)
   }
 
   function openEdit(entry: RosterEntry) {
-    setDraft({ label: entry.label, pokemonId: entry.pokemonId, moveIds: [...entry.moveIds] })
+    setDraft({ label: entry.label, pokemonId: entry.pokemonId, moveIds: [...entry.moveIds], nature: entry.nature, evs: entry.evs })
     setEditingId(entry.id)
     setAssigningId(null)
   }
@@ -126,6 +130,15 @@ export const RosterPanel: React.FC = () => {
                   onChange={id => setDraftMove(mi, id)}
                 />
               ))}
+              {advancedMode && (
+                <EVPanel
+                  language={language}
+                  nature={draft.nature}
+                  evs={draft.evs ?? EMPTY_EVS}
+                  onChangeNature={n => setDraft(d => ({ ...d, nature: n }))}
+                  onChangeEvs={evs => setDraft(d => ({ ...d, evs }))}
+                />
+              )}
             </div>
           )}
           <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
@@ -212,6 +225,34 @@ export const RosterPanel: React.FC = () => {
                     )
                   })}
                 </div>
+
+                {/* Nature + EV summary */}
+                {advancedMode && (entry.nature || entry.evs) && (() => {
+                  const nat = entry.nature ? NATURE_BY_ID[entry.nature] : null
+                  const evs = entry.evs
+                  const totalEv = evs ? Object.values(evs).reduce((s, v) => s + v, 0) : 0
+                  const evSummary = evs ? Object.entries(evs)
+                    .filter(([, v]) => v > 0)
+                    .map(([k, v]) => `${k === 'spatk' ? 'SpA' : k === 'spdef' ? 'SpD' : k === 'hp' ? 'HP' : k.charAt(0).toUpperCase() + k.slice(1)}:${v}`)
+                    .join(' ')
+                    : ''
+                  return (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 4, alignItems: 'center' }}>
+                      {nat && (
+                        <span style={{ fontSize: 10, fontFamily: "'Share Tech Mono', monospace", color: 'var(--text-secondary)', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 2, padding: '1px 5px' }}>
+                          {nat.names[language] || nat.names.en}
+                          {nat.plus && <span style={{ color: '#4ade80' }}> +{nat.plus === 'spatk' ? 'SpA' : nat.plus === 'spdef' ? 'SpD' : nat.plus.charAt(0).toUpperCase() + nat.plus.slice(1)}</span>}
+                          {nat.minus && <span style={{ color: '#f97316' }}> -{nat.minus === 'spatk' ? 'SpA' : nat.minus === 'spdef' ? 'SpD' : nat.minus.charAt(0).toUpperCase() + nat.minus.slice(1)}</span>}
+                        </span>
+                      )}
+                      {totalEv > 0 && (
+                        <span style={{ fontSize: 10, fontFamily: "'Share Tech Mono', monospace", color: 'var(--text-muted)' }}>
+                          {evSummary}
+                        </span>
+                      )}
+                    </div>
+                  )
+                })()}
 
                 {/* Actions */}
                 {isAssigning ? (
