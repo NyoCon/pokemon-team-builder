@@ -39,7 +39,8 @@ function App() {
     if (teamFromUrl) setActiveTeam(teamFromUrl)
 
     // Collect all move IDs + item slugs referenced in persisted teams + activeTeam + roster
-    const allTeams = [activeTeam, ...Object.values(teams)]
+    // Include teamFromUrl explicitly since setActiveTeam hasn't updated state yet
+    const allTeams = [teamFromUrl ?? activeTeam, ...Object.values(teams)]
     const persistedMoveIds = [...new Set([
       ...allTeams.flatMap(team => team.slots.flatMap(slot => slot.moveIds.filter(Boolean) as number[])),
       ...roster.flatMap(entry => entry.moveIds.filter(Boolean) as number[]),
