@@ -6,25 +6,26 @@ let _pokemon: Promise<PokemonSummary[]> | null = null
 let _types: Promise<{ chart: TypeChart; typeNames: Record<string, Record<string, string>> }> | null = null
 let _moves: Promise<Record<number, MoveDetail>> | null = null
 
-function loadJson<T>(path: string): Promise<T> {
-  return fetch(path).then(r => {
-    if (!r.ok) throw new Error(`Failed to load ${path}: ${r.status}`)
+function loadJson<T>(file: string): Promise<T> {
+  const url = `${import.meta.env.BASE_URL}data/${file}`
+  return fetch(url).then(r => {
+    if (!r.ok) throw new Error(`Failed to load ${url}: ${r.status}`)
     return r.json()
   })
 }
 
 export function fetchAllPokemon(): Promise<PokemonSummary[]> {
-  if (!_pokemon) _pokemon = loadJson('/data/pokemon.json')
+  if (!_pokemon) _pokemon = loadJson('pokemon.json')
   return _pokemon
 }
 
 export function fetchAllTypes(): Promise<{ chart: TypeChart; typeNames: Record<string, Record<string, string>> }> {
-  if (!_types) _types = loadJson('/data/types.json')
+  if (!_types) _types = loadJson('types.json')
   return _types
 }
 
 export async function fetchAllMoves(): Promise<Record<number, MoveDetail>> {
-  if (!_moves) _moves = loadJson('/data/moves.json')
+  if (!_moves) _moves = loadJson('moves.json')
   return _moves
 }
 
