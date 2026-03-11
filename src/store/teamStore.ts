@@ -2,6 +2,22 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Team, TeamSlot, Lang, RosterEntry, EVs } from '../types'
 
+export type MoveFilter = {
+  superEffective: boolean
+  neutral: boolean
+  resisted: boolean
+  immune: boolean
+  nonDamaging: boolean
+}
+
+const DEFAULT_MOVE_FILTER: MoveFilter = {
+  superEffective: true,
+  neutral: false,
+  resisted: true,
+  immune: false,
+  nonDamaging: false,
+}
+
 function makeEmptyTeam(): Team {
   return {
     slots: [
@@ -22,6 +38,7 @@ interface TeamStore {
   theme: 'dark' | 'light'
   advancedMode: boolean
   defenders: (number | null)[]
+  analysisFilter: MoveFilter
   roster: RosterEntry[]
 
   setSlot: (index: number, pokemonId: number | null) => void
@@ -39,6 +56,7 @@ interface TeamStore {
   addDefender: () => void
   removeDefender: (index: number) => void
   setDefenders: (ids: (number | null)[]) => void
+  setAnalysisFilter: (filter: MoveFilter) => void
   setActiveTeam: (team: Team) => void
   resetActiveTeam: () => void
   addToRoster: (entry: Omit<RosterEntry, 'id'>) => void
@@ -56,6 +74,7 @@ export const useTeamStore = create<TeamStore>()(
       theme: 'dark',
       advancedMode: false,
       defenders: [null, null, null],
+      analysisFilter: DEFAULT_MOVE_FILTER,
       roster: [],
 
       setSlot: (index, pokemonId) =>
@@ -138,6 +157,7 @@ export const useTeamStore = create<TeamStore>()(
           return { defenders: s.defenders.filter((_, i) => i !== index) }
         }),
       setDefenders: (ids) => set({ defenders: ids.length > 0 ? ids : [null, null, null] }),
+      setAnalysisFilter: (filter) => set({ analysisFilter: filter }),
       setActiveTeam: (activeTeam) => set({ activeTeam }),
       resetActiveTeam: () => set({ activeTeam: makeEmptyTeam() }),
 

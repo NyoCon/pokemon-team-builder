@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { PokemonPicker } from '../TeamBuilder/PokemonPicker'
 import { TypeBadge } from '../TeamBuilder/TypeBadge'
 import { useTeamStore } from '../../store/teamStore'
@@ -7,24 +7,9 @@ import { calcDefenderEffectiveness } from '../../utils/effectiveness'
 import { isSTAB } from '../../utils/stab'
 import { getAbilityImmunities } from '../../utils/abilities'
 import { t, type TKey } from '../../utils/i18n'
+import type { MoveFilter } from '../../store/teamStore'
 import { TRAINERS, GYM_LEADERS, ELITE_FOUR, ELITE_FOUR_REMATCH, GIOVANNI_ENCOUNTERS, RIVAL_BATTLES, CHAMPION, CHAMPION_REMATCH } from '../../data/trainers'
 import type { MoveDetail, Lang } from '../../types'
-
-type MoveFilter = {
-  superEffective: boolean
-  neutral: boolean
-  resisted: boolean
-  immune: boolean
-  nonDamaging: boolean
-}
-
-const FILTER_DEFAULTS: MoveFilter = {
-  superEffective: true,
-  neutral: false,
-  resisted: true,
-  immune: false,
-  nonDamaging: false,
-}
 
 export const AnalysisPage: React.FC = () => {
   const defenders = useTeamStore(s => s.defenders)
@@ -38,8 +23,9 @@ export const AnalysisPage: React.FC = () => {
   const typeChart = useCacheStore(s => s.typeChart)
   const moveCache = useCacheStore(s => s.moveCache)
 
-  const [filter, setFilter] = useState<MoveFilter>(FILTER_DEFAULTS)
-  const toggleFilter = (key: keyof MoveFilter) => setFilter(f => ({ ...f, [key]: !f[key] }))
+  const filter = useTeamStore(s => s.analysisFilter)
+  const setAnalysisFilter = useTeamStore(s => s.setAnalysisFilter)
+  const toggleFilter = (key: keyof MoveFilter) => setAnalysisFilter({ ...filter, [key]: !filter[key] })
 
   // Per-column slot list: col C has flat indices C, C+3, C+6, ...
   const columns = useMemo(() =>
