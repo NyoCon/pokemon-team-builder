@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { PokemonPicker } from '../TeamBuilder/PokemonPicker'
 import { TypeBadge } from '../TeamBuilder/TypeBadge'
 import { useTeamStore } from '../../store/teamStore'
@@ -6,9 +6,25 @@ import { useCacheStore } from '../../store/cacheStore'
 import { calcDefenderEffectiveness } from '../../utils/effectiveness'
 import { isSTAB } from '../../utils/stab'
 import { getAbilityImmunities } from '../../utils/abilities'
-import { t } from '../../utils/i18n'
+import { t, type TKey } from '../../utils/i18n'
 import { TRAINERS, GYM_LEADERS, ELITE_FOUR, ELITE_FOUR_REMATCH, GIOVANNI_ENCOUNTERS, RIVAL_BATTLES, CHAMPION, CHAMPION_REMATCH } from '../../data/trainers'
 import type { MoveDetail, Lang } from '../../types'
+
+type MoveFilter = {
+  superEffective: boolean
+  neutral: boolean
+  resisted: boolean
+  immune: boolean
+  nonDamaging: boolean
+}
+
+const FILTER_DEFAULTS: MoveFilter = {
+  superEffective: true,
+  neutral: false,
+  resisted: true,
+  immune: false,
+  nonDamaging: false,
+}
 
 export const AnalysisPage: React.FC = () => {
   const defenders = useTeamStore(s => s.defenders)
@@ -22,8 +38,10 @@ export const AnalysisPage: React.FC = () => {
   const typeChart = useCacheStore(s => s.typeChart)
   const moveCache = useCacheStore(s => s.moveCache)
 
+  const [filter, setFilter] = useState<MoveFilter>(FILTER_DEFAULTS)
+  const toggleFilter = (key: keyof MoveFilter) => setFilter(f => ({ ...f, [key]: !f[key] }))
+
   // Per-column slot list: col C has flat indices C, C+3, C+6, ...
-  // Always append one trailing null if the last slot in the column is filled
   const columns = useMemo(() =>
     [0, 1, 2].map(col => {
       const items: Array<{ flatIndex: number; defId: number | null }> = []
@@ -49,17 +67,21 @@ export const AnalysisPage: React.FC = () => {
       const pokemon = slot.pokemonId ? pokemonList.find(p => p.id === slot.pokemonId) : null
       if (!pokemon) return null
 
-      const allMoves = slot.moveIds
-        .filter(Boolean)
-        .map(mid => moveCache[mid!])
-        .filter(m => m && m.power != null)
+      const cached = slot.moveIds.filter(Boolean).map(mid => moveCache[mid!]).filter(Boolean)
+
+      const damaging = cached
+        .filter(m => m.power != null)
         .map(move => {
           const mult = calcDefenderEffectiveness(move.type, defender.types, typeChart, defenderImmunities)
           const stab = isSTAB(move.type, pokemon.types)
           return { move, mult, stab }
         })
 
-      const superEffective = allMoves
+      const nonDamaging = cached
+        .filter(m => m.power == null)
+        .map(move => ({ move, mult: -1, stab: false }))
+
+      const superEffective = damaging
         .filter(m => m.mult > 1)
         .sort((a, b) => {
           const dmgA = (a.move.power ?? 0) * a.mult
@@ -67,12 +89,18 @@ export const AnalysisPage: React.FC = () => {
           return dmgB !== dmgA ? dmgB - dmgA : b.mult - a.mult
         })
 
-      const resisted = allMoves
+      const neutral = damaging
+        .filter(m => m.mult === 1)
+        .sort((a, b) => (b.move.power ?? 0) - (a.move.power ?? 0))
+
+      const resisted = damaging
         .filter(m => m.mult > 0 && m.mult < 1)
         .sort((a, b) => a.mult - b.mult)
 
-      if (!superEffective.length && !resisted.length) return null
-      return { pokemon, superEffective, resisted, slotIndex: i }
+      const immune = damaging
+        .filter(m => m.mult === 0)
+
+      return { pokemon, superEffective, neutral, resisted, immune, nonDamaging, slotIndex: i }
     }).filter(Boolean)
 
     return { defender, teamMatchups }
@@ -80,19 +108,38 @@ export const AnalysisPage: React.FC = () => {
 
   const renderMoveRow = (
     { move, mult, stab }: { move: MoveDetail; mult: number; stab: boolean },
-    isGood: boolean,
     lang: Lang
   ) => {
     const moveName = move.names[lang] || move.names.en
     const isX4 = mult >= 4
     const isImmune = mult === 0
-    const bg = isGood
-      ? isX4 ? 'rgba(74,222,128,0.08)' : 'rgba(74,222,128,0.04)'
-      : isImmune ? 'rgba(100,100,100,0.08)' : 'rgba(249,115,22,0.06)'
-    const borderColor = isGood
-      ? isX4 ? 'rgba(74,222,128,0.3)' : 'rgba(74,222,128,0.12)'
-      : isImmune ? 'rgba(100,100,100,0.2)' : 'rgba(249,115,22,0.2)'
-    const multColor = isGood ? '#4ade80' : isImmune ? '#6b7280' : '#f97316'
+    const isNonDamaging = mult === -1
+    const isGood = mult > 1
+    const isNeutral = mult === 1
+
+    const bg = isNonDamaging
+      ? 'rgba(139,92,246,0.06)'
+      : isGood
+        ? isX4 ? 'rgba(74,222,128,0.08)' : 'rgba(74,222,128,0.04)'
+        : isNeutral
+          ? 'rgba(150,150,150,0.06)'
+          : isImmune ? 'rgba(100,100,100,0.08)' : 'rgba(249,115,22,0.06)'
+
+    const borderColor = isNonDamaging
+      ? 'rgba(139,92,246,0.2)'
+      : isGood
+        ? isX4 ? 'rgba(74,222,128,0.3)' : 'rgba(74,222,128,0.12)'
+        : isNeutral
+          ? 'rgba(150,150,150,0.15)'
+          : isImmune ? 'rgba(100,100,100,0.2)' : 'rgba(249,115,22,0.2)'
+
+    const multColor = isNonDamaging
+      ? '#a78bfa'
+      : isGood ? '#4ade80'
+      : isNeutral ? '#9ca3af'
+      : isImmune ? '#6b7280' : '#f97316'
+
+    const multLabel = isNonDamaging ? '—' : `${mult}×`
 
     return (
       <div key={move.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 6px', background: bg, border: `1px solid ${borderColor}`, borderRadius: 2 }}>
@@ -104,10 +151,18 @@ export const AnalysisPage: React.FC = () => {
         {move.power != null && (
           <span style={{ color: 'var(--text-muted)', fontSize: 12, fontFamily: "'Share Tech Mono', monospace" }}>{move.power}</span>
         )}
-        <span style={{ color: multColor, fontSize: 13, fontWeight: 700, fontFamily: "'Share Tech Mono', monospace" }}>{mult}×</span>
+        <span style={{ color: multColor, fontSize: 13, fontWeight: 700, fontFamily: "'Share Tech Mono', monospace" }}>{multLabel}</span>
       </div>
     )
   }
+
+  const FILTER_DEFS: Array<{ key: keyof MoveFilter; labelKey: TKey; activeColor: string; activeBg: string }> = [
+    { key: 'superEffective', labelKey: 'filterSuperEff',    activeColor: '#4ade80', activeBg: 'rgba(74,222,128,0.12)' },
+    { key: 'neutral',        labelKey: 'filterNeutral',     activeColor: '#d1d5db', activeBg: 'rgba(150,150,150,0.12)' },
+    { key: 'resisted',       labelKey: 'filterResisted',    activeColor: '#f97316', activeBg: 'rgba(249,115,22,0.12)' },
+    { key: 'immune',         labelKey: 'filterImmune',      activeColor: '#6b7280', activeBg: 'rgba(100,100,100,0.12)' },
+    { key: 'nonDamaging',    labelKey: 'filterNonDamaging', activeColor: '#a78bfa', activeBg: 'rgba(139,92,246,0.12)' },
+  ]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -124,6 +179,34 @@ export const AnalysisPage: React.FC = () => {
         >
           {t('clearAll', language)}
         </button>
+      </div>
+
+      {/* Filter toggles */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {FILTER_DEFS.map(({ key, labelKey, activeColor, activeBg }) => {
+          const active = filter[key]
+          return (
+            <button
+              key={key}
+              onClick={() => toggleFilter(key)}
+              style={{
+                padding: '4px 10px',
+                border: `1px solid ${active ? activeColor : 'var(--border)'}`,
+                borderRadius: 3,
+                background: active ? activeBg : 'transparent',
+                color: active ? activeColor : 'var(--text-muted)',
+                fontSize: 11,
+                fontWeight: 700,
+                fontFamily: "'Rajdhani', sans-serif",
+                letterSpacing: '0.08em',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              {t(labelKey, language)}
+            </button>
+          )
+        })}
       </div>
 
       {/* Trainer loader */}
@@ -196,6 +279,18 @@ export const AnalysisPage: React.FC = () => {
               const defender = result?.defender ?? null
               const teamMatchups = result?.teamMatchups ?? []
               const canRemove = defenders.filter(d => d !== null).length > 0 && flatIndex < defenders.length && defenders.length > 3
+
+              const visibleMatchups = teamMatchups.filter(m => {
+                if (!m) return false
+                return (
+                  (filter.superEffective && m.superEffective.length > 0) ||
+                  (filter.neutral && m.neutral.length > 0) ||
+                  (filter.resisted && m.resisted.length > 0) ||
+                  (filter.immune && m.immune.length > 0) ||
+                  (filter.nonDamaging && m.nonDamaging.length > 0)
+                )
+              })
+
               return (
                 <div key={flatIndex} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 4, overflow: 'hidden' }}>
                   {/* Picker header */}
@@ -227,14 +322,25 @@ export const AnalysisPage: React.FC = () => {
                   {/* Matchup results */}
                   {!defender ? (
                     <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>—</div>
-                  ) : teamMatchups.length === 0 ? (
-                    <div style={{ padding: '16px', color: 'var(--text-muted)', fontSize: 12 }}>{t('noSuperEffective', language)}</div>
+                  ) : visibleMatchups.length === 0 ? (
+                    <div style={{ padding: '16px', color: 'var(--text-muted)', fontSize: 12 }}>
+                      {teamMatchups.length === 0 ? t('noSuperEffective', language) : t('noMatchingMoves', language)}
+                    </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      {teamMatchups.map((m, mi) => {
+                      {visibleMatchups.map((m, mi) => {
                         if (!m) return null
-                        const { pokemon, superEffective, resisted, slotIndex } = m
+                        const { pokemon, superEffective, neutral, resisted, immune, nonDamaging, slotIndex } = m
                         const name = pokemon.names[language] || pokemon.names.en
+
+                        const sections = [
+                          ...(filter.superEffective ? superEffective : []),
+                          ...(filter.neutral ? neutral : []),
+                          ...(filter.resisted ? resisted : []),
+                          ...(filter.immune ? immune : []),
+                          ...(filter.nonDamaging ? nonDamaging : []),
+                        ]
+
                         return (
                           <div key={slotIndex} style={{ borderTop: mi > 0 ? '1px solid var(--border)' : undefined, paddingTop: mi > 0 ? 6 : 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: 'var(--bg-card2)' }}>
@@ -245,11 +351,7 @@ export const AnalysisPage: React.FC = () => {
                               </div>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '6px 8px' }}>
-                              {superEffective.map(e => renderMoveRow(e, true, language))}
-                              {resisted.length > 0 && superEffective.length > 0 && (
-                                <div style={{ borderTop: '1px solid var(--border)', margin: '2px 0' }} />
-                              )}
-                              {resisted.map(e => renderMoveRow(e, false, language))}
+                              {sections.map(e => renderMoveRow(e, language))}
                             </div>
                           </div>
                         )

@@ -23,6 +23,12 @@ const translations = {
   // Defender panel / Analysis page
   opponentAnalysis:   { en: 'Opponent Analysis', de: 'Gegner-Analyse', fr: 'Analyse adversaire', it: 'Analisi avversario', es: 'Análisis rival' },
   noSuperEffective:   { en: 'No team move is super effective', de: 'Keine super-effektive Attacke im Team', fr: 'Aucune capacité super efficace', it: 'Nessuna mossa super efficace', es: 'Ningún movimiento es súper efectivo' },
+  noMatchingMoves:    { en: 'No moves match the active filter', de: 'Keine Attacken für den aktiven Filter', fr: 'Aucune capacité pour ce filtre', it: 'Nessuna mossa per il filtro', es: 'Ningún movimiento para el filtro' },
+  filterSuperEff:     { en: '×2+ Super', de: '×2+ Sehr Eff.', fr: '×2+ Super Eff.', it: '×2+ Super Eff.', es: '×2+ Súper Ef.' },
+  filterNeutral:      { en: '×1 Neutral', de: '×1 Neutral', fr: '×1 Neutre', it: '×1 Neutrale', es: '×1 Neutral' },
+  filterResisted:     { en: '×½ Resisted', de: '×½ Schwach', fr: '×½ Résisté', it: '×½ Resistito', es: '×½ Débil' },
+  filterImmune:       { en: '×0 Immune', de: '×0 Immun', fr: '×0 Immun', it: '×0 Immune', es: '×0 Inmune' },
+  filterNonDamaging:  { en: 'Status', de: 'Status', fr: 'Statut', it: 'Stato', es: 'Estado' },
   addOpponent:        { en: '+ Add opponent', de: '+ Gegner hinzufügen', fr: '+ Ajouter adversaire', it: '+ Aggiungi avversario', es: '+ Añadir rival' },
   clearAll:           { en: 'Clear all', de: 'Alle leeren', fr: 'Tout vider', it: 'Svuota tutto', es: 'Vaciar todo' },
   opponent:           { en: 'Opponent', de: 'Gegner', fr: 'Adversaire', it: 'Avversario', es: 'Rival' },
