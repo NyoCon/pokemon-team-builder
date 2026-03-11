@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Team, TeamSlot, Lang, RosterEntry, EVs } from '../types'
 
 export type MoveFilter = {
@@ -182,6 +182,11 @@ export const useTeamStore = create<TeamStore>()(
     }),
     {
       name: 'pokemon-team-builder',
+      storage: createJSONStorage(() => ({
+        getItem: (name) => { try { return localStorage.getItem(name) } catch { return null } },
+        setItem: (name, value) => { try { localStorage.setItem(name, value) } catch { /* quota exceeded */ } },
+        removeItem: (name) => { try { localStorage.removeItem(name) } catch { /* ignore */ } },
+      })),
       partialize: (state) => ({
         activeTeam: state.activeTeam,
         teams: state.teams,
