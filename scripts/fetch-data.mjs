@@ -152,29 +152,58 @@ async function fetchMoves() {
   return moves
 }
 
+// ── items ─────────────────────────────────────────────────────────────────────
+
+// Must stay in sync with src/data/items.ts (order matters for URL encoding)
+const FRLG_ITEM_SLUGS = [
+  'silk-scarf','charcoal','mystic-water','miracle-seed','never-melt-ice','magnet',
+  'twisted-spoon','black-belt','sharp-beak','poison-barb','soft-sand','hard-stone',
+  'silver-powder','spell-tag','metal-coat','dragon-fang','black-glasses',
+  'leftovers','shell-bell','lum-berry','sitrus-berry','kings-rock','scope-lens',
+  'choice-band','focus-band','quick-claw','bright-powder','white-herb',
+  'macho-brace','exp-share','amulet-coin','smoke-ball','everstone',
+  'sacred-ash','nugget','pp-up','pp-max','full-restore','max-potion',
+  'full-heal','max-revive','max-elixir','max-ether','fluffy-tail',
+  'repel','super-repel','max-repel','old-amber','helix-fossil','dome-fossil',
+  'lucky-egg','stick',
+]
+
+async function fetchItems() {
+  console.log(`Fetching ${FRLG_ITEM_SLUGS.length} item details...`)
+  const items = {}
+  await runBatched(FRLG_ITEM_SLUGS, async slug => {
+    const data = await get(`${BASE}/item/${slug}`)
+    items[slug] = {
+      slug,
+      names: extractNames(data.names),
+      spriteUrl: data.sprites?.default ?? null,
+    }
+  })
+  return items
+}
+
 // ── main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
   mkdirSync(OUT_DIR, { recursive: true })
 
-  const [pokemon, types, moves] = await Promise.all([
+  const [pokemon, types, moves, items] = await Promise.all([
     fetchPokemon(),
     fetchTypes(),
     fetchMoves(),
+    fetchItems(),
   ])
 
   writeFileSync(join(OUT_DIR, 'pokemon.json'), JSON.stringify(pokemon))
   writeFileSync(join(OUT_DIR, 'types.json'), JSON.stringify(types))
   writeFileSync(join(OUT_DIR, 'moves.json'), JSON.stringify(moves))
-
-  const pokemonKb = Math.round(JSON.stringify(pokemon).length / 1024)
-  const typesKb = Math.round(JSON.stringify(types).length / 1024)
-  const movesKb = Math.round(JSON.stringify(moves).length / 1024)
+  writeFileSync(join(OUT_DIR, 'items.json'), JSON.stringify(items))
 
   console.log(`\nDone! Written to public/data/`)
-  console.log(`  pokemon.json  ${pokemonKb} KB`)
-  console.log(`  types.json    ${typesKb} KB`)
-  console.log(`  moves.json    ${movesKb} KB`)
+  console.log(`  pokemon.json  ${Math.round(JSON.stringify(pokemon).length / 1024)} KB`)
+  console.log(`  types.json    ${Math.round(JSON.stringify(types).length / 1024)} KB`)
+  console.log(`  moves.json    ${Math.round(JSON.stringify(moves).length / 1024)} KB`)
+  console.log(`  items.json    ${Math.round(JSON.stringify(items).length / 1024)} KB`)
 }
 
 main().catch(err => { console.error(err); process.exit(1) })

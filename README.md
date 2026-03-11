@@ -16,18 +16,17 @@ A web app for planning Pokémon teams for **FireRed & LeafGreen**. Build your te
 - **Team Manager** — save, load, and delete named teams; share via URL
 - **5 languages** — EN, DE, FR, IT, ES
 - **Light / Dark mode**
-- **Offline-capable** — all data cached in localStorage after first load
+- **Offline-capable** — all PokeAPI data bundled as static files, no runtime API calls
 
 ## Scope
 
-FireRed / LeafGreen only: Gen 1 Pokémon (#001–#151), moves from the Gen 1–3 era. Data sourced from [PokéAPI](https://pokeapi.co/).
+FireRed / LeafGreen only: Pokémon #001–#251, moves from the Gen 1–3 era. Data sourced from [PokéAPI](https://pokeapi.co/).
 
 ## Tech Stack
 
 - [Vite](https://vite.dev/) + [React](https://react.dev/) + TypeScript
 - [Zustand](https://zustand.docs.pmnd.rs/) (state + localStorage persistence)
 - [TailwindCSS v4](https://tailwindcss.com/)
-- PokéAPI (client-side only, no backend)
 
 ## Local Development
 
@@ -36,9 +35,30 @@ npm install
 npm run dev
 ```
 
+## Updating game data
+
+All PokeAPI data is stored as static JSON files in `public/data/` and shipped with the app. To regenerate:
+
+```bash
+npm run fetch-data
+```
+
+This updates:
+
+| File | Content |
+|------|---------|
+| `public/data/pokemon.json` | Names, types, sprites for Pokémon 1–251 |
+| `public/data/types.json` | Type chart + localized type names |
+| `public/data/moves.json` | All Gen 1–3 moves with FR/LG-era power values |
+| `public/data/items.json` | Held items with sprites and localized names |
+
+The script fetches from PokeAPI and takes ~2 minutes. Commit the updated files afterwards.
+
+> If you add new items to `src/data/items.ts`, mirror the change in `FRLG_ITEM_SLUGS` in `scripts/fetch-data.mjs` and re-run the script.
+
 ## URL Parameters
 
 | Parameter | Effect |
 |-----------|--------|
 | `?team=…` | Load a shared team directly |
-| `?clear`  | Wipe all localStorage cache |
+| `?clear`  | Wipe localStorage |
