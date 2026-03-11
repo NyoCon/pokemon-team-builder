@@ -16,6 +16,7 @@ export const AnalysisPage: React.FC = () => {
   const removeDefender = useTeamStore(s => s.removeDefender)
   const setDefenderAt = useTeamStore(s => s.setDefenderAt)
   const setDefenders = useTeamStore(s => s.setDefenders)
+  const addDefender = useTeamStore(s => s.addDefender)
   const activeTeam = useTeamStore(s => s.activeTeam)
   const language = useTeamStore(s => s.language)
 
@@ -27,20 +28,13 @@ export const AnalysisPage: React.FC = () => {
   const setAnalysisFilter = useTeamStore(s => s.setAnalysisFilter)
   const toggleFilter = (key: keyof MoveFilter) => setAnalysisFilter({ ...filter, [key]: !filter[key] })
 
-  // Per-column slot list: col C has flat indices C, C+3, C+6, ...
+  // Per-column slot list: slot i → column (i % 3), row floor(i / 3)
   const columns = useMemo(() =>
-    [0, 1, 2].map(col => {
-      const items: Array<{ flatIndex: number; defId: number | null }> = []
-      let p = 0
-      while (col + p * 3 < defenders.length) {
-        items.push({ flatIndex: col + p * 3, defId: defenders[col + p * 3] ?? null })
-        p++
-      }
-      if (items.length === 0 || items[items.length - 1].defId !== null) {
-        items.push({ flatIndex: col + p * 3, defId: null })
-      }
-      return items
-    })
+    [0, 1, 2].map(col =>
+      defenders
+        .map((defId, i) => ({ flatIndex: i, defId: defId ?? null }))
+        .filter((_, i) => i % 3 === col)
+    )
   , [defenders])
 
   const getMatchups = (defId: number | null) => {
@@ -160,7 +154,13 @@ export const AnalysisPage: React.FC = () => {
         </span>
         <div style={{ flex: 1 }} />
         <button
-          onClick={() => setDefenders([null, null, null])}
+          onClick={addDefender}
+          style={{ padding: '6px 14px', background: 'transparent', border: '1px solid var(--accent)', borderRadius: 3, color: 'var(--accent)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif", cursor: 'pointer', textTransform: 'uppercase' }}
+        >
+          {t('addOpponent', language)}
+        </button>
+        <button
+          onClick={() => setDefenders([])}
           style={{ padding: '6px 14px', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text-muted)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif", cursor: 'pointer', textTransform: 'uppercase' }}
         >
           {t('clearAll', language)}
@@ -257,6 +257,11 @@ export const AnalysisPage: React.FC = () => {
       </div>
 
       {/* 3 flex columns, each grows independently */}
+      {defenders.length === 0 && (
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: 12, padding: '24px 0' }}>
+          {t('addOpponent', language)}
+        </div>
+      )}
       <div style={{ display: 'flex', gap: 12, alignItems: 'start' }}>
         {columns.map((colItems, col) => (
           <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -264,7 +269,7 @@ export const AnalysisPage: React.FC = () => {
               const result = getMatchups(defId)
               const defender = result?.defender ?? null
               const teamMatchups = result?.teamMatchups ?? []
-              const canRemove = defenders.filter(d => d !== null).length > 0 && flatIndex < defenders.length && defenders.length > 3
+              const canRemove = true
 
               const visibleMatchups = teamMatchups.filter(m => {
                 if (!m) return false

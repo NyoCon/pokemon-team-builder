@@ -73,7 +73,7 @@ export const useTeamStore = create<TeamStore>()(
       language: 'en',
       theme: 'dark',
       advancedMode: false,
-      defenders: [null, null, null],
+      defenders: [],
       analysisFilter: DEFAULT_MOVE_FILTER,
       roster: [],
 
@@ -156,7 +156,7 @@ export const useTeamStore = create<TeamStore>()(
           if (s.defenders.length <= 1) return {}
           return { defenders: s.defenders.filter((_, i) => i !== index) }
         }),
-      setDefenders: (ids) => set({ defenders: ids.length > 0 ? ids : [null, null, null] }),
+      setDefenders: (ids) => set({ defenders: ids }),
       setAnalysisFilter: (filter) => set({ analysisFilter: filter }),
       setActiveTeam: (activeTeam) => set({ activeTeam }),
       resetActiveTeam: () => set({ activeTeam: makeEmptyTeam() }),
