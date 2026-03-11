@@ -41,9 +41,13 @@ export async function fetchMoveDetail(moveId: number): Promise<MoveDetail> {
   return move
 }
 
-export async function fetchItemDetail(slug: string): Promise<ItemDetail> {
+export async function fetchAllItems(): Promise<Record<string, ItemDetail>> {
   if (!_items) _items = loadJson('items.json')
-  const items = await _items
+  return _items
+}
+
+export async function fetchItemDetail(slug: string): Promise<ItemDetail> {
+  const items = await fetchAllItems()
   const item = items[slug]
   if (!item) throw new Error(`Item ${slug} not found in static data`)
   return item
