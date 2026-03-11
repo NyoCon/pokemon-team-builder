@@ -16,7 +16,8 @@ function loadJson<T>(file: string): Promise<T> {
 }
 
 export function fetchAllPokemon(): Promise<PokemonSummary[]> {
-  if (!_pokemon) _pokemon = loadJson('pokemon.json')
+  if (!_pokemon) _pokemon = loadJson<PokemonSummary[]>('pokemon.json')
+    .then(list => list.sort((a, b) => a.id - b.id))
   return _pokemon
 }
 

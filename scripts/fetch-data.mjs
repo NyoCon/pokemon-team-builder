@@ -77,7 +77,7 @@ function extractNames(namesArr) {
 async function fetchPokemon() {
   console.log('Fetching pokemon (1–251)...')
   const ids = Array.from({ length: 251 }, (_, i) => i + 1)
-  const pokemon = []
+  const pokemon = new Array(ids.length)
   const pokemonMoves = {}
 
   await runBatched(ids, async id => {
@@ -85,12 +85,12 @@ async function fetchPokemon() {
       get(`${BASE}/pokemon/${id}`),
       get(`${BASE}/pokemon-species/${id}`),
     ])
-    pokemon.push({
+    pokemon[id - 1] = {
       id,
       names: extractNames(species.names),
       types: poke.types.map(t => t.type.name),
       spriteUrl: poke.sprites.front_default ?? '',
-    })
+    }
     // Extract FRLG-learnable move IDs (level-up + machine + egg)
     const learnableIds = []
     for (const m of poke.moves) {
