@@ -161,60 +161,31 @@ export const MovePicker: React.FC<Props> = ({ value, pokemonId, onChange }) => {
             )}
           </div>
 
-          {/* Type filter row */}
-          <div style={{
-            display: 'flex',
-            gap: 3,
-            padding: '4px 6px',
-            borderBottom: '1px solid var(--border)',
-            overflowX: 'auto',
-            flexShrink: 0,
-          }}>
-            <button
-              onClick={() => setFilterType(null)}
+          {/* Type filter dropdown */}
+          <div style={{ padding: '4px 6px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+            <select
+              value={filterType ?? ''}
+              onChange={e => setFilterType(e.target.value || null)}
               style={{
-                padding: '2px 7px',
-                background: filterType === null ? 'rgba(0,191,255,0.15)' : 'transparent',
-                border: `1px solid ${filterType === null ? 'rgba(0,191,255,0.5)' : 'var(--border)'}`,
+                width: '100%',
+                padding: '3px 6px',
+                background: 'var(--bg-deep)',
+                border: `1px solid ${filterType ? (TYPE_COLORS[filterType]?.text ?? 'var(--border)') : 'var(--border)'}`,
                 borderRadius: 2,
-                color: filterType === null ? 'var(--accent)' : 'var(--text-muted)',
-                fontSize: 10,
-                fontWeight: 700,
+                color: filterType ? (TYPE_COLORS[filterType]?.text ?? 'var(--text-primary)') : 'var(--text-muted)',
+                fontSize: 11,
                 fontFamily: "'Rajdhani', sans-serif",
+                fontWeight: 700,
                 cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
               }}
             >
-              ALL
-            </button>
-            {availableTypes.map(type => {
-              const tc = TYPE_COLORS[type]
-              const color = tc?.text ?? '#888'
-              const active = filterType === type
-              return (
-                <button
-                  key={type}
-                  onClick={() => setFilterType(active ? null : type)}
-                  style={{
-                    padding: '2px 6px',
-                    background: active ? `${color}33` : 'transparent',
-                    border: `1px solid ${active ? color : 'var(--border)'}`,
-                    borderRadius: 2,
-                    color: active ? color : 'var(--text-muted)',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    fontFamily: "'Rajdhani', sans-serif",
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {type}
-                </button>
-              )
-            })}
+              <option value="">— Alle Typen —</option>
+              {availableTypes.map(type => (
+                <option key={type} value={type} style={{ textTransform: 'capitalize' }}>
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Move list */}
