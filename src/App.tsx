@@ -156,6 +156,7 @@ function App() {
         <span style={{ color: 'var(--text-muted)', fontSize: 10, fontFamily: "'Share Tech Mono', monospace" }}>
           {t('dataSource', language)}
         </span>
+        <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>·</span>
         <a
           href="https://github.com/NyoCon/pokemon-team-builder"
           target="_blank"
