@@ -3,7 +3,6 @@ import { useCacheStore } from '../../store/cacheStore'
 import { useTeamStore } from '../../store/teamStore'
 import { TypeBadge } from './TypeBadge'
 import { t } from '../../utils/i18n'
-import { TYPE_COLORS } from '../../utils/typeColors'
 
 interface Props {
   value: number | null
@@ -143,9 +142,9 @@ export const MovePicker: React.FC<Props> = ({ value, pokemonId, onChange }) => {
               style={{
                 padding: '3px 5px',
                 background: 'var(--bg-deep)',
-                border: `1px solid ${filterType ? (TYPE_COLORS[filterType]?.text ?? 'var(--border)') : 'var(--border)'}`,
+                border: '1px solid var(--border)',
                 borderRadius: 2,
-                color: filterType ? (TYPE_COLORS[filterType]?.text ?? 'var(--text-primary)') : 'var(--text-muted)',
+                color: 'var(--text-primary)',
                 fontSize: 11,
                 fontFamily: "'Rajdhani', sans-serif",
                 fontWeight: 700,
