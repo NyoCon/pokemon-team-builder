@@ -69,6 +69,7 @@ export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
               key={mi}
               slotIndex={slotIndex}
               moveIndex={mi}
+              pokemonId={slot.pokemonId}
               pokemonTypes={pokemon.types}
               moveId={slot.moveIds[mi]}
             />

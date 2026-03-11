@@ -30,6 +30,15 @@ const GEN4_PLUS_GROUPS = new Set([
 
 const SUPPORTED_LANGS = ['de', 'en', 'fr', 'it', 'es']
 
+const FRLG_GROUPS = new Set([
+  'firered-leafgreen',
+  'red-blue', 'yellow',
+  'gold-silver', 'crystal',
+  'ruby-sapphire', 'emerald',
+])
+
+const LEARNABLE_METHODS = new Set(['level-up', 'machine', 'egg'])
+
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 async function get(url) {
@@ -68,19 +77,35 @@ function extractNames(namesArr) {
 async function fetchPokemon() {
   console.log('Fetching pokemon (1–251)...')
   const ids = Array.from({ length: 251 }, (_, i) => i + 1)
-  const list = await runBatched(ids, async id => {
-    const [pokemon, species] = await Promise.all([
+  const pokemon = []
+  const pokemonMoves = {}
+
+  await runBatched(ids, async id => {
+    const [poke, species] = await Promise.all([
       get(`${BASE}/pokemon/${id}`),
       get(`${BASE}/pokemon-species/${id}`),
     ])
-    return {
+    pokemon.push({
       id,
       names: extractNames(species.names),
-      types: pokemon.types.map(t => t.type.name),
-      spriteUrl: pokemon.sprites.front_default ?? '',
+      types: poke.types.map(t => t.type.name),
+      spriteUrl: poke.sprites.front_default ?? '',
+    })
+    // Extract FRLG-learnable move IDs (level-up + machine + egg)
+    const learnableIds = []
+    for (const m of poke.moves) {
+      const isLearnable = m.version_group_details.some(
+        vgd => FRLG_GROUPS.has(vgd.version_group.name) && LEARNABLE_METHODS.has(vgd.move_learn_method.name)
+      )
+      if (isLearnable) {
+        const moveId = parseInt(m.move.url.split('/').filter(Boolean).pop() ?? '0')
+        if (moveId > 0) learnableIds.push(moveId)
+      }
     }
+    pokemonMoves[id] = learnableIds
   })
-  return list
+
+  return { pokemon, pokemonMoves }
 }
 
 // ── types ─────────────────────────────────────────────────────────────────────
@@ -187,7 +212,7 @@ async function fetchItems() {
 async function main() {
   mkdirSync(OUT_DIR, { recursive: true })
 
-  const [pokemon, types, moves, items] = await Promise.all([
+  const [{ pokemon, pokemonMoves }, types, moves, items] = await Promise.all([
     fetchPokemon(),
     fetchTypes(),
     fetchMoves(),
@@ -198,12 +223,14 @@ async function main() {
   writeFileSync(join(OUT_DIR, 'types.json'), JSON.stringify(types))
   writeFileSync(join(OUT_DIR, 'moves.json'), JSON.stringify(moves))
   writeFileSync(join(OUT_DIR, 'items.json'), JSON.stringify(items))
+  writeFileSync(join(OUT_DIR, 'pokemon-moves.json'), JSON.stringify(pokemonMoves))
 
   console.log(`\nDone! Written to public/data/`)
-  console.log(`  pokemon.json  ${Math.round(JSON.stringify(pokemon).length / 1024)} KB`)
-  console.log(`  types.json    ${Math.round(JSON.stringify(types).length / 1024)} KB`)
-  console.log(`  moves.json    ${Math.round(JSON.stringify(moves).length / 1024)} KB`)
-  console.log(`  items.json    ${Math.round(JSON.stringify(items).length / 1024)} KB`)
+  console.log(`  pokemon.json        ${Math.round(JSON.stringify(pokemon).length / 1024)} KB`)
+  console.log(`  types.json          ${Math.round(JSON.stringify(types).length / 1024)} KB`)
+  console.log(`  moves.json          ${Math.round(JSON.stringify(moves).length / 1024)} KB`)
+  console.log(`  items.json          ${Math.round(JSON.stringify(items).length / 1024)} KB`)
+  console.log(`  pokemon-moves.json  ${Math.round(JSON.stringify(pokemonMoves).length / 1024)} KB`)
 }
 
 main().catch(err => { console.error(err); process.exit(1) })

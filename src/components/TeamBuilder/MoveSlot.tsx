@@ -8,11 +8,12 @@ import { isSTAB } from '../../utils/stab'
 interface Props {
   slotIndex: number
   moveIndex: number
+  pokemonId: number | null
   pokemonTypes: string[]
   moveId: number | null
 }
 
-export const MoveSlot: React.FC<Props> = ({ slotIndex, moveIndex, pokemonTypes, moveId }) => {
+export const MoveSlot: React.FC<Props> = ({ slotIndex, moveIndex, pokemonId, pokemonTypes, moveId }) => {
   const setMove = useTeamStore(s => s.setMove)
   const moveCache = useCacheStore(s => s.moveCache)
   const move = moveId ? moveCache[moveId] : null
@@ -40,6 +41,7 @@ export const MoveSlot: React.FC<Props> = ({ slotIndex, moveIndex, pokemonTypes, 
         <div style={{ flex: 1 }}>
           <MovePicker
             value={moveId}
+            pokemonId={pokemonId}
             onChange={id => setMove(slotIndex, moveIndex, id)}
           />
         </div>

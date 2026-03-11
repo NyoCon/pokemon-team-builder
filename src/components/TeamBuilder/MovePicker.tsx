@@ -3,15 +3,19 @@ import { useCacheStore } from '../../store/cacheStore'
 import { useTeamStore } from '../../store/teamStore'
 import { TypeBadge } from './TypeBadge'
 import { t } from '../../utils/i18n'
+import { TYPE_COLORS } from '../../utils/typeColors'
 
 interface Props {
   value: number | null
+  pokemonId?: number | null
   onChange: (id: number | null) => void
 }
 
-export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
+export const MovePicker: React.FC<Props> = ({ value, pokemonId, onChange }) => {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [filterType, setFilterType] = useState<string | null>(null)
+  const [learnableOnly, setLearnableOnly] = useState(false)
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -19,22 +23,38 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
   const language = useTeamStore(s => s.language)
   const moveCache = useCacheStore(s => s.moveCache)
   const allMoveIds = useCacheStore(s => s.allMoveIds)
+  const pokemonMovesets = useCacheStore(s => s.pokemonMovesets)
+
+  const learnset = pokemonId ? (pokemonMovesets[pokemonId] ?? null) : null
 
   const selected = value ? moveCache[value] : null
   const displayName = selected ? (selected.names[language] || selected.names.en) : null
 
-  const cachedMoves = useMemo(() => {
+  const allCachedMoves = useMemo(() => {
     return allMoveIds.map(id => moveCache[id]).filter(Boolean)
   }, [allMoveIds, moveCache])
 
+  // Types present in current move pool (for filter chips)
+  const availableTypes = useMemo(() => {
+    const types = new Set(allCachedMoves.map(m => m.type))
+    return [...types].sort()
+  }, [allCachedMoves])
+
   const filtered = useMemo(() => {
-    if (!search.trim()) return cachedMoves
-    const q = search.toLowerCase()
-    return cachedMoves.filter(m => {
-      const name = m.names[language] || m.names.en || ''
-      return name.toLowerCase().includes(q)
-    })
-  }, [search, cachedMoves, language])
+    let moves = allCachedMoves
+    if (learnableOnly && learnset) {
+      const set = new Set(learnset)
+      moves = moves.filter(m => set.has(m.id))
+    }
+    if (filterType) {
+      moves = moves.filter(m => m.type === filterType)
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      moves = moves.filter(m => (m.names[language] || m.names.en || '').toLowerCase().includes(q))
+    }
+    return moves
+  }, [allCachedMoves, learnableOnly, learnset, filterType, search, language])
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -100,12 +120,13 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
             border: '1px solid var(--border-bright)',
             borderRadius: 3,
             zIndex: 1000,
-            maxHeight: 260,
+            maxHeight: 320,
             display: 'flex',
             flexDirection: 'column',
             boxShadow: '0 8px 24px rgba(0,0,0,0.7)',
           }}
         >
+          {/* Search row */}
           <div style={{ padding: '5px 6px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 6 }}>
             <input
               ref={inputRef}
@@ -117,7 +138,86 @@ export const MovePicker: React.FC<Props> = ({ value, onChange }) => {
             {isLoading && (
               <span style={{ color: 'var(--text-muted)', fontSize: 10, whiteSpace: 'nowrap' }}>…</span>
             )}
+            {learnset && (
+              <button
+                onClick={() => setLearnableOnly(v => !v)}
+                title={learnableOnly ? 'Alle Attacken' : 'Nur lernbare Attacken'}
+                style={{
+                  padding: '3px 7px',
+                  background: learnableOnly ? 'rgba(99,102,241,0.2)' : 'transparent',
+                  border: `1px solid ${learnableOnly ? 'rgba(99,102,241,0.6)' : 'var(--border)'}`,
+                  borderRadius: 2,
+                  color: learnableOnly ? '#818cf8' : 'var(--text-muted)',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  fontFamily: "'Rajdhani', sans-serif",
+                  letterSpacing: '0.05em',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {learnableOnly ? '★ Lernbar' : '☆ Lernbar'}
+              </button>
+            )}
           </div>
+
+          {/* Type filter row */}
+          <div style={{
+            display: 'flex',
+            gap: 3,
+            padding: '4px 6px',
+            borderBottom: '1px solid var(--border)',
+            overflowX: 'auto',
+            flexShrink: 0,
+          }}>
+            <button
+              onClick={() => setFilterType(null)}
+              style={{
+                padding: '2px 7px',
+                background: filterType === null ? 'rgba(0,191,255,0.15)' : 'transparent',
+                border: `1px solid ${filterType === null ? 'rgba(0,191,255,0.5)' : 'var(--border)'}`,
+                borderRadius: 2,
+                color: filterType === null ? 'var(--accent)' : 'var(--text-muted)',
+                fontSize: 10,
+                fontWeight: 700,
+                fontFamily: "'Rajdhani', sans-serif",
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+            >
+              ALL
+            </button>
+            {availableTypes.map(type => {
+              const tc = TYPE_COLORS[type]
+              const color = tc?.text ?? '#888'
+              const active = filterType === type
+              return (
+                <button
+                  key={type}
+                  onClick={() => setFilterType(active ? null : type)}
+                  style={{
+                    padding: '2px 6px',
+                    background: active ? `${color}33` : 'transparent',
+                    border: `1px solid ${active ? color : 'var(--border)'}`,
+                    borderRadius: 2,
+                    color: active ? color : 'var(--text-muted)',
+                    fontSize: 10,
+                    fontWeight: 700,
+                    fontFamily: "'Rajdhani', sans-serif",
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {type}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Move list */}
           <div style={{ overflowY: 'auto', flex: 1 }}>
             {filtered.map(m => {
               const name = m.names[language] || m.names.en

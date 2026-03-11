@@ -8,6 +8,7 @@ interface CacheStore {
   moveCache: Record<number, MoveDetail>
   allMoveIds: number[]
   itemCache: Record<string, ItemDetail>
+  pokemonMovesets: Record<number, number[]>
   loading: boolean
   error: string | null
 
@@ -18,6 +19,7 @@ interface CacheStore {
   addMovesToCache: (moves: MoveDetail[]) => void
   setAllMoveIds: (ids: number[]) => void
   addItemsToCache: (items: ItemDetail[]) => void
+  setPokemonMovesets: (data: Record<number, number[]>) => void
   setLoading: (v: boolean) => void
   setError: (e: string | null) => void
 }
@@ -29,6 +31,7 @@ export const useCacheStore = create<CacheStore>((set) => ({
   moveCache: {},
   allMoveIds: [],
   itemCache: {},
+  pokemonMovesets: {},
   loading: false,
   error: null,
 
@@ -42,6 +45,7 @@ export const useCacheStore = create<CacheStore>((set) => ({
     return { moveCache: next }
   }),
   setAllMoveIds: (allMoveIds) => set({ allMoveIds }),
+  setPokemonMovesets: (data) => set({ pokemonMovesets: data }),
   addItemsToCache: (items) => set(s => {
     const next = { ...s.itemCache }
     items.forEach(item => { next[item.slug] = item })

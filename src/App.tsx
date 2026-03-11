@@ -7,11 +7,11 @@ import { TeamList } from './components/TeamManager/TeamList'
 import { RosterPanel } from './components/Roster/RosterPanel'
 import { useCacheStore } from './store/cacheStore'
 import { useTeamStore } from './store/teamStore'
-import { fetchAllPokemon, fetchAllTypes, fetchAllMoves, fetchAllItems } from './api/queries'
+import { fetchAllPokemon, fetchAllTypes, fetchAllMoves, fetchAllItems, fetchAllPokemonMovesets } from './api/queries'
 import { readTeamFromUrl } from './utils/urlEncoding'
 
 function App() {
-  const { setPokemonList, setTypeChart, setTypeNames, setAllMoveIds, addMovesToCache, addItemsToCache, setLoading, setError } = useCacheStore()
+  const { setPokemonList, setTypeChart, setTypeNames, setAllMoveIds, addMovesToCache, addItemsToCache, setPokemonMovesets, setLoading, setError } = useCacheStore()
   const setActiveTeam = useTeamStore(s => s.setActiveTeam)
   const theme = useTeamStore(s => s.theme)
   const language = useTeamStore(s => s.language)
@@ -36,14 +36,15 @@ function App() {
     if (teamFromUrl) setActiveTeam(teamFromUrl)
 
     setLoading(true)
-    Promise.all([fetchAllPokemon(), fetchAllTypes(), fetchAllMoves(), fetchAllItems()])
-      .then(([pokemon, { chart, typeNames }, movesMap, itemsMap]) => {
+    Promise.all([fetchAllPokemon(), fetchAllTypes(), fetchAllMoves(), fetchAllItems(), fetchAllPokemonMovesets()])
+      .then(([pokemon, { chart, typeNames }, movesMap, itemsMap, pokemonMovesets]) => {
         setPokemonList(pokemon)
         setTypeChart(chart)
         setTypeNames(typeNames)
         addMovesToCache(Object.values(movesMap))
         setAllMoveIds(Object.keys(movesMap).map(Number))
         addItemsToCache(Object.values(itemsMap))
+        setPokemonMovesets(pokemonMovesets)
         setLoading(false)
       })
       .catch(err => {

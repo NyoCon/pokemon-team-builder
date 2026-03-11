@@ -5,6 +5,7 @@ let _pokemon: Promise<PokemonSummary[]> | null = null
 let _types: Promise<{ chart: TypeChart; typeNames: Record<string, Record<string, string>> }> | null = null
 let _moves: Promise<Record<number, MoveDetail>> | null = null
 let _items: Promise<Record<string, ItemDetail>> | null = null
+let _pokemonMoves: Promise<Record<number, number[]>> | null = null
 
 function loadJson<T>(file: string): Promise<T> {
   const url = `${import.meta.env.BASE_URL}data/${file}`
@@ -53,8 +54,8 @@ export async function fetchItemDetail(slug: string): Promise<ItemDetail> {
   return item
 }
 
-// kept for potential future use (playthrough branch)
-export async function fetchPokemonMoves(_pokemonId: number): Promise<number[]> {
-  return fetchAllMoveIds()
+export async function fetchAllPokemonMovesets(): Promise<Record<number, number[]>> {
+  if (!_pokemonMoves) _pokemonMoves = loadJson('pokemon-moves.json')
+  return _pokemonMoves
 }
 
