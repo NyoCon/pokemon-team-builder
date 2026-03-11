@@ -147,7 +147,6 @@ export const MovePicker: React.FC<Props> = ({ value, pokemonId, onChange }) => {
                 color: 'var(--text-primary)',
                 fontSize: 11,
                 fontFamily: "'Rajdhani', sans-serif",
-                fontWeight: 700,
                 cursor: 'pointer',
                 flexShrink: 0,
               }}
