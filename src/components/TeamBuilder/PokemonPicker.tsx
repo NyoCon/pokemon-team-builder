@@ -134,7 +134,7 @@ export const PokemonPicker: React.FC<Props> = ({ value, onChange, placeholderKey
             />
           </div>
           <div style={{ overflowY: 'auto', flex: 1 }}>
-            {filtered.slice(0, 100).map(p => {
+            {filtered.map(p => {
               const name = p.names[language] || p.names.en
               return (
                 <button

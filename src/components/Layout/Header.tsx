@@ -4,6 +4,7 @@ import { useCacheStore } from '../../store/cacheStore'
 import { t } from '../../utils/i18n'
 import type { Lang } from '../../types'
 
+
 const LANGS: { code: Lang; label: string }[] = [
   { code: 'en', label: 'EN' },
   { code: 'de', label: 'DE' },
@@ -17,6 +18,8 @@ export const Header: React.FC = () => {
   const setLanguage = useTeamStore(s => s.setLanguage)
   const theme = useTeamStore(s => s.theme)
   const setTheme = useTeamStore(s => s.setTheme)
+  const advancedMode = useTeamStore(s => s.advancedMode)
+  const setAdvancedMode = useTeamStore(s => s.setAdvancedMode)
   const loading = useCacheStore(s => s.loading)
   const error = useCacheStore(s => s.error)
   const pokemonList = useCacheStore(s => s.pokemonList)
@@ -75,6 +78,26 @@ export const Header: React.FC = () => {
           </span>
         )}
       </div>
+
+      {/* Advanced mode toggle */}
+      <button
+        onClick={() => setAdvancedMode(!advancedMode)}
+        style={{
+          padding: '4px 10px',
+          background: advancedMode ? 'rgba(99,102,241,0.15)' : 'transparent',
+          border: advancedMode ? '1px solid rgba(99,102,241,0.5)' : '1px solid var(--border)',
+          borderRadius: 2,
+          color: advancedMode ? '#818cf8' : 'var(--text-muted)',
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          fontFamily: "'Rajdhani', sans-serif",
+          cursor: 'pointer',
+          textTransform: 'uppercase',
+        }}
+      >
+        {t('advancedMode', language)}
+      </button>
 
       {/* Theme toggle */}
       <button
