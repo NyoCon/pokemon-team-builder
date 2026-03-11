@@ -152,10 +152,7 @@ export const useTeamStore = create<TeamStore>()(
       addDefender: () =>
         set(s => ({ defenders: [...s.defenders, null] })),
       removeDefender: (index) =>
-        set(s => {
-          if (s.defenders.length <= 1) return {}
-          return { defenders: s.defenders.filter((_, i) => i !== index) }
-        }),
+        set(s => ({ defenders: s.defenders.filter((_, i) => i !== index) })),
       setDefenders: (ids) => set({ defenders: ids }),
       setAnalysisFilter: (filter) => set({ analysisFilter: filter }),
       setActiveTeam: (activeTeam) => set({ activeTeam }),
