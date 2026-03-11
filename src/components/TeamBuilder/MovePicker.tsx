@@ -24,6 +24,7 @@ export const MovePicker: React.FC<Props> = ({ value, pokemonId, onChange }) => {
   const moveCache = useCacheStore(s => s.moveCache)
   const allMoveIds = useCacheStore(s => s.allMoveIds)
   const pokemonMovesets = useCacheStore(s => s.pokemonMovesets)
+  const typeNames = useCacheStore(s => s.typeNames)
 
   const learnset = pokemonId ? (pokemonMovesets[pokemonId] ?? null) : null
 
@@ -154,7 +155,7 @@ export const MovePicker: React.FC<Props> = ({ value, pokemonId, onChange }) => {
             >
               <option value="">Typ</option>
               {availableTypes.map(type => (
-                <option key={type} value={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</option>
+                <option key={type} value={type}>{typeNames[type]?.[language] || typeNames[type]?.en || type}</option>
               ))}
             </select>
             {learnset && (
