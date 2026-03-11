@@ -37,7 +37,7 @@ export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <span style={{
           color: 'var(--text-muted)',
-          fontSize: 12,
+          fontSize: 10,
           fontFamily: "'Share Tech Mono', monospace",
           letterSpacing: '0.1em',
           fontWeight: 700,
@@ -47,7 +47,7 @@ export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
         {pokemon && (
           <span style={{
             color: 'var(--text-muted)',
-            fontSize: 12,
+            fontSize: 11,
             fontFamily: "'Share Tech Mono', monospace",
           }}>
             #{String(pokemon.id).padStart(3, '0')}
