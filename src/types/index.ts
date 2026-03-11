@@ -41,9 +41,22 @@ export interface TypeChart {
   }
 }
 
+export interface EVs {
+  hp: number
+  atk: number
+  def: number
+  spatk: number
+  spdef: number
+  spe: number
+}
+
+export const EMPTY_EVS: EVs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, spe: 0 }
+
 export interface TeamSlot {
   pokemonId: number | null
   moveIds: [number | null, number | null, number | null, number | null]
+  nature?: string
+  evs?: EVs
 }
 
 export const EMPTY_SLOT: TeamSlot = {

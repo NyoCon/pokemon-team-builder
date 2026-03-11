@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Team, TeamSlot, Lang, RosterEntry } from '../types'
+import type { Team, TeamSlot, Lang, RosterEntry, EVs } from '../types'
 
 function makeEmptyTeam(): Team {
   return {
@@ -20,11 +20,15 @@ interface TeamStore {
   teams: Record<string, Team>
   language: Lang
   theme: 'dark' | 'light'
+  advancedMode: boolean
   defenders: (number | null)[]
   roster: RosterEntry[]
 
   setSlot: (index: number, pokemonId: number | null) => void
   setMove: (slotIndex: number, moveIndex: number, moveId: number | null) => void
+  setNature: (slotIndex: number, nature: string | undefined) => void
+  setEVs: (slotIndex: number, evs: EVs) => void
+  setAdvancedMode: (on: boolean) => void
   saveTeam: (name: string) => void
   loadTeam: (name: string) => void
   deleteTeam: (name: string) => void
@@ -49,6 +53,7 @@ export const useTeamStore = create<TeamStore>()(
       teams: {},
       language: 'en',
       theme: 'dark',
+      advancedMode: false,
       defenders: [null, null, null],
       roster: [],
 
@@ -88,6 +93,24 @@ export const useTeamStore = create<TeamStore>()(
           delete teams[name]
           return { teams }
         }),
+
+      setNature: (slotIndex, nature) =>
+        set(s => {
+          const slots = s.activeTeam.slots.map((slot, i) =>
+            i === slotIndex ? { ...slot, nature } : slot
+          ) as Team['slots']
+          return { activeTeam: { slots } }
+        }),
+
+      setEVs: (slotIndex, evs) =>
+        set(s => {
+          const slots = s.activeTeam.slots.map((slot, i) =>
+            i === slotIndex ? { ...slot, evs } : slot
+          ) as Team['slots']
+          return { activeTeam: { slots } }
+        }),
+
+      setAdvancedMode: (advancedMode) => set({ advancedMode }),
 
       setLanguage: (language) => set({ language }),
       setTheme: (theme) => set({ theme }),
@@ -138,6 +161,7 @@ export const useTeamStore = create<TeamStore>()(
         teams: state.teams,
         language: state.language,
         theme: state.theme,
+        advancedMode: state.advancedMode,
         roster: state.roster,
       }),
     }

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { PokemonPicker } from './PokemonPicker'
 import { MoveSlot } from './MoveSlot'
 import { TypeBadge } from './TypeBadge'
+import { EVPanel } from './EVPanel'
 import { useTeamStore } from '../../store/teamStore'
 import { useCacheStore } from '../../store/cacheStore'
 import { t } from '../../utils/i18n'
@@ -15,6 +16,7 @@ export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
   const addToRoster = useTeamStore(s => s.addToRoster)
   const slot = useTeamStore(s => s.activeTeam.slots[slotIndex])
   const language = useTeamStore(s => s.language)
+  const advancedMode = useTeamStore(s => s.advancedMode)
   const pokemonList = useCacheStore(s => s.pokemonList)
   const [savedToBox, setSavedToBox] = useState(false)
 
@@ -69,6 +71,7 @@ export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
               moveId={slot.moveIds[mi]}
             />
           ))}
+          {advancedMode && <EVPanel slotIndex={slotIndex} language={language} />}
           <button
             onClick={() => {
               addToRoster({ label: '', pokemonId: pokemon.id, moveIds: [...slot.moveIds] })

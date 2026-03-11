@@ -62,6 +62,18 @@ const translations = {
   cancelEdit:         { en: 'Cancel', de: 'Abbrechen', fr: 'Annuler', it: 'Annulla', es: 'Cancelar' },
   confirmAssign:      { en: 'Assign to which slot?', de: 'In welchen Slot?', fr: 'Quel slot?', it: 'Quale slot?', es: '¿Qué slot?' },
 
+  // Advanced mode
+  advancedMode:       { en: 'Advanced', de: 'Erweitert', fr: 'Avancé', it: 'Avanzato', es: 'Avanzado' },
+  nature:             { en: 'Nature', de: 'Wesen', fr: 'Nature', it: 'Natura', es: 'Naturaleza' },
+  noNature:           { en: '— Nature —', de: '— Wesen —', fr: '— Nature —', it: '— Natura —', es: '— Naturaleza —' },
+  evTotal:            { en: 'EVs', de: 'EW', fr: 'VA', it: 'PE', es: 'PE' },
+  statHp:             { en: 'HP', de: 'KP', fr: 'PV', it: 'PS', es: 'PS' },
+  statAtk:            { en: 'Atk', de: 'ANG', fr: 'Atq', it: 'Att', es: 'Ata' },
+  statDef:            { en: 'Def', de: 'VER', fr: 'Déf', it: 'Dif', es: 'Def' },
+  statSpAtk:          { en: 'SpAtk', de: 'SPA', fr: 'SpAtq', it: 'SpAtt', es: 'SpAta' },
+  statSpDef:          { en: 'SpDef', de: 'SPV', fr: 'SpDéf', it: 'SpDif', es: 'SpDef' },
+  statSpe:            { en: 'Spe', de: 'INI', fr: 'Vit', it: 'Vel', es: 'Vel' },
+
   // Footer
   dataSource:         { en: 'Data: PokéAPI · FireRed / LeafGreen', de: 'Daten: PokéAPI · Feuerrot / Blattgrün', fr: 'Données: PokéAPI · Rouge Feu / Vert Feuille', it: 'Dati: PokéAPI · Rosso Fuoco / Verde Foglia', es: 'Datos: PokéAPI · Rojo Fuego / Verde Hoja' },
 } satisfies Record<string, Record<Lang, string>>
