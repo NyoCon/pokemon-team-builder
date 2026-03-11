@@ -22,16 +22,22 @@ export const AnalysisPage: React.FC = () => {
   const typeChart = useCacheStore(s => s.typeChart)
   const moveCache = useCacheStore(s => s.moveCache)
 
-  // Pad to always show one full empty row after the last filled slot
-  const displayDefenders = useMemo(() => {
-    const arr = [...defenders]
-    const lastFilled = arr.reduce<number>((acc, v, i) => v !== null ? i : acc, -1)
-    const targetRows = Math.max(1, Math.ceil((lastFilled + 1) / 3) + 1)
-    while (arr.length < targetRows * 3) arr.push(null)
-    return arr
-  }, [defenders])
-
-  const canRemove = defenders.length > 3
+  // Per-column slot list: col C has flat indices C, C+3, C+6, ...
+  // Always append one trailing null if the last slot in the column is filled
+  const columns = useMemo(() =>
+    [0, 1, 2].map(col => {
+      const items: Array<{ flatIndex: number; defId: number | null }> = []
+      let p = 0
+      while (col + p * 3 < defenders.length) {
+        items.push({ flatIndex: col + p * 3, defId: defenders[col + p * 3] ?? null })
+        p++
+      }
+      if (items.length === 0 || items[items.length - 1].defId !== null) {
+        items.push({ flatIndex: col + p * 3, defId: null })
+      }
+      return items
+    })
+  , [defenders])
 
   const getMatchups = (defId: number | null) => {
     const defender = defId ? pokemonList.find(p => p.id === defId) : null
@@ -181,19 +187,22 @@ export const AnalysisPage: React.FC = () => {
         </select>
       </div>
 
-      {/* 3-col grid, slots in natural order */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, alignItems: 'start' }}>
-        {displayDefenders.map((defId, i) => {
-          const result = getMatchups(defId)
+      {/* 3 flex columns, each grows independently */}
+      <div style={{ display: 'flex', gap: 12, alignItems: 'start' }}>
+        {columns.map((colItems, col) => (
+          <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {colItems.map(({ flatIndex, defId }) => {
+              const result = getMatchups(defId)
               const defender = result?.defender ?? null
               const teamMatchups = result?.teamMatchups ?? []
+              const canRemove = defenders.filter(d => d !== null).length > 0 && flatIndex < defenders.length && defenders.length > 3
               return (
-                <div key={i} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+                <div key={flatIndex} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 4, overflow: 'hidden' }}>
                   {/* Picker header */}
                   <div style={{ padding: '8px 10px', background: 'var(--bg-card2)', borderBottom: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                       <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace", letterSpacing: '0.1em', fontWeight: 700 }}>
-                        {t('opponent', language).toUpperCase()} {i + 1}
+                        {t('opponent', language).toUpperCase()} {flatIndex + 1}
                       </span>
                       {defender && (
                         <span style={{ color: 'var(--text-muted)', fontSize: 9, fontFamily: "'Share Tech Mono', monospace" }}>
@@ -204,7 +213,7 @@ export const AnalysisPage: React.FC = () => {
                       {defender && defender.types.map(tp => <TypeBadge key={tp} typeName={tp} />)}
                       {canRemove && (
                         <button
-                          onClick={() => removeDefender(i)}
+                          onClick={() => removeDefender(flatIndex)}
                           title={t('remove', language)}
                           style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 2, color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer', padding: '0 5px', lineHeight: '18px' }}
                         >
@@ -212,7 +221,7 @@ export const AnalysisPage: React.FC = () => {
                         </button>
                       )}
                     </div>
-                    <PokemonPicker value={defId ?? null} onChange={id => setDefenderAt(i, id)} placeholderKey="chooseOpponent" />
+                    <PokemonPicker value={defId ?? null} onChange={id => setDefenderAt(flatIndex, id)} placeholderKey="chooseOpponent" />
                   </div>
 
                   {/* Matchup results */}
@@ -249,7 +258,9 @@ export const AnalysisPage: React.FC = () => {
                   )}
                 </div>
               )
-        })}
+            })}
+          </div>
+        ))}
       </div>
     </div>
   )
