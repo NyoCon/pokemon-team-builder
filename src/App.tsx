@@ -151,7 +151,7 @@ function App() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 16,
+        gap: 6,
       }}>
         <span style={{ color: 'var(--text-muted)', fontSize: 10, fontFamily: "'Share Tech Mono', monospace" }}>
           {t('dataSource', language)}
