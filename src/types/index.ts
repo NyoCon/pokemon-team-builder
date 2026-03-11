@@ -20,6 +20,12 @@ export interface PokemonSummary {
   spriteUrl: string
 }
 
+export interface ItemDetail {
+  slug: string
+  names: LocalizedName
+  spriteUrl: string | null
+}
+
 export interface MoveDetail {
   id: number
   names: LocalizedName
@@ -57,6 +63,7 @@ export interface TeamSlot {
   moveIds: [number | null, number | null, number | null, number | null]
   nature?: string
   evs?: EVs
+  item?: string
 }
 
 export const EMPTY_SLOT: TeamSlot = {
@@ -88,4 +95,5 @@ export interface RosterEntry {
   moveIds: [number | null, number | null, number | null, number | null]
   nature?: string
   evs?: EVs
+  item?: string
 }

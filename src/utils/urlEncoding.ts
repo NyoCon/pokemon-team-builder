@@ -1,6 +1,7 @@
 import type { Team, TeamSlot } from '../types'
 import { EMPTY_SLOT } from '../types'
 import { NATURES } from '../data/natures'
+import { FRLG_ITEM_SLUGS } from '../data/items'
 
 // nature index in URL: 0 = not set, 1–25 = NATURES[i-1]
 function encodeNature(nature: string | undefined): number {
@@ -12,6 +13,16 @@ function decodeNature(val: number): string | undefined {
   return val > 0 ? NATURES[val - 1]?.id : undefined
 }
 
+// item index in URL: 0 = not set, 1–N = FRLG_ITEM_SLUGS[i-1]
+function encodeItem(item: string | undefined): number {
+  if (!item) return 0
+  const idx = FRLG_ITEM_SLUGS.indexOf(item)
+  return idx >= 0 ? idx + 1 : 0
+}
+function decodeItem(val: number): string | undefined {
+  return val > 0 ? FRLG_ITEM_SLUGS[val - 1] : undefined
+}
+
 export function encodeTeam(team: Team): string {
   return team.slots
     .map(slot => {
@@ -19,10 +30,11 @@ export function encodeTeam(team: Team): string {
       const moves = slot.moveIds.map(m => m ?? 0).join('-')
       const nat = encodeNature(slot.nature)
       const evs = slot.evs
-      const evPart = evs
-        ? `${nat}-${evs.hp}-${evs.atk}-${evs.def}-${evs.spatk}-${evs.spdef}-${evs.spe}`
-        : nat > 0 ? `${nat}-0-0-0-0-0-0` : ''
-      return evPart ? `${pid}-${moves}-${evPart}` : `${pid}-${moves}`
+      const itm = encodeItem(slot.item)
+      const hasAdvanced = nat > 0 || evs != null || itm > 0
+      if (!hasAdvanced) return `${pid}-${moves}`
+      const evPart = evs ? `${evs.hp}-${evs.atk}-${evs.def}-${evs.spatk}-${evs.spdef}-${evs.spe}` : '0-0-0-0-0-0'
+      return `${pid}-${moves}-${nat}-${evPart}-${itm}`
     })
     .join('_')
 }
@@ -38,13 +50,14 @@ export function decodeTeam(encoded: string): Team {
       nums[3] || null,
       nums[4] || null,
     ]
-    // extended format: 11 numbers (pid + 4 moves + nature + 6 EVs)
-    const nature = nums.length >= 11 ? decodeNature(nums[5]) : undefined
-    const evs = nums.length >= 11 ? {
+    // extended format: 12 numbers (pid + 4 moves + nature + 6 EVs + item)
+    const nature = nums.length >= 12 ? decodeNature(nums[5]) : undefined
+    const evs = nums.length >= 12 ? {
       hp: nums[6], atk: nums[7], def: nums[8],
-      spatk: nums[9], spdef: nums[10], spe: nums[11] ?? 0,
+      spatk: nums[9], spdef: nums[10], spe: nums[11],
     } : undefined
-    return { pokemonId, moveIds, nature, evs } as TeamSlot
+    const item = nums.length >= 12 ? decodeItem(nums[12] ?? 0) : undefined
+    return { pokemonId, moveIds, nature, evs, item } as TeamSlot
   })
 
   while (slots.length < 6) {

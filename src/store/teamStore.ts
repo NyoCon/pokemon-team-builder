@@ -28,6 +28,7 @@ interface TeamStore {
   setMove: (slotIndex: number, moveIndex: number, moveId: number | null) => void
   setNature: (slotIndex: number, nature: string | undefined) => void
   setEVs: (slotIndex: number, evs: EVs) => void
+  setItem: (slotIndex: number, item: string | undefined) => void
   setAdvancedMode: (on: boolean) => void
   saveTeam: (name: string) => void
   loadTeam: (name: string) => void
@@ -110,6 +111,14 @@ export const useTeamStore = create<TeamStore>()(
           return { activeTeam: { slots } }
         }),
 
+      setItem: (slotIndex, item) =>
+        set(s => {
+          const slots = s.activeTeam.slots.map((slot, i) =>
+            i === slotIndex ? { ...slot, item } : slot
+          ) as Team['slots']
+          return { activeTeam: { slots } }
+        }),
+
       setAdvancedMode: (advancedMode) => set({ advancedMode }),
 
       setLanguage: (language) => set({ language }),
@@ -150,7 +159,7 @@ export const useTeamStore = create<TeamStore>()(
           const entry = s.roster.find(e => e.id === entryId)
           if (!entry) return {}
           const slots = [...s.activeTeam.slots] as Team['slots']
-          slots[slotIndex] = { pokemonId: entry.pokemonId, moveIds: [...entry.moveIds] as TeamSlot['moveIds'], nature: entry.nature, evs: entry.evs }
+          slots[slotIndex] = { pokemonId: entry.pokemonId, moveIds: [...entry.moveIds] as TeamSlot['moveIds'], nature: entry.nature, evs: entry.evs, item: entry.item }
           return { activeTeam: { slots } }
         }),
     }),

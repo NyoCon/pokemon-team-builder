@@ -62,6 +62,12 @@ const translations = {
   cancelEdit:         { en: 'Cancel', de: 'Abbrechen', fr: 'Annuler', it: 'Annulla', es: 'Cancelar' },
   confirmAssign:      { en: 'Assign to which slot?', de: 'In welchen Slot?', fr: 'Quel slot?', it: 'Quale slot?', es: '¿Qué slot?' },
 
+  // Items
+  chooseItem:         { en: 'Choose item...', de: 'Item wählen...', fr: 'Choisir objet...', it: 'Scegli oggetto...', es: 'Elegir objeto...' },
+  searchItem:         { en: 'Search item...', de: 'Item suchen...', fr: 'Rechercher objet...', it: 'Cerca oggetto...', es: 'Buscar objeto...' },
+  noItemsFound:       { en: 'No items found', de: 'Kein Item gefunden', fr: 'Aucun objet trouvé', it: 'Nessun oggetto trovato', es: 'No se encontró objeto' },
+  heldItem:           { en: 'Item', de: 'Item', fr: 'Objet', it: 'Oggetto', es: 'Objeto' },
+
   // Advanced mode
   advancedMode:       { en: 'Advanced', de: 'Erweitert', fr: 'Avancé', it: 'Avanzato', es: 'Avanzado' },
   nature:             { en: 'Nature', de: 'Wesen', fr: 'Nature', it: 'Natura', es: 'Naturaleza' },

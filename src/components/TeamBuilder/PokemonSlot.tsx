@@ -3,6 +3,7 @@ import { PokemonPicker } from './PokemonPicker'
 import { MoveSlot } from './MoveSlot'
 import { TypeBadge } from './TypeBadge'
 import { EVPanel } from './EVPanel'
+import { ItemPicker } from './ItemPicker'
 import { useTeamStore } from '../../store/teamStore'
 import { useCacheStore } from '../../store/cacheStore'
 import { t } from '../../utils/i18n'
@@ -13,6 +14,7 @@ interface Props {
 
 export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
   const setSlot = useTeamStore(s => s.setSlot)
+  const setItem = useTeamStore(s => s.setItem)
   const addToRoster = useTeamStore(s => s.addToRoster)
   const slot = useTeamStore(s => s.activeTeam.slots[slotIndex])
   const language = useTeamStore(s => s.language)
@@ -71,10 +73,13 @@ export const PokemonSlot: React.FC<Props> = ({ slotIndex }) => {
               moveId={slot.moveIds[mi]}
             />
           ))}
+          {advancedMode && (
+            <ItemPicker value={slot.item} onChange={slug => setItem(slotIndex, slug)} />
+          )}
           {advancedMode && <EVPanel slotIndex={slotIndex} language={language} />}
           <button
             onClick={() => {
-              addToRoster({ label: '', pokemonId: pokemon.id, moveIds: [...slot.moveIds], nature: slot.nature, evs: slot.evs })
+              addToRoster({ label: '', pokemonId: pokemon.id, moveIds: [...slot.moveIds], nature: slot.nature, evs: slot.evs, item: slot.item })
               setSavedToBox(true)
               setTimeout(() => setSavedToBox(false), 1500)
             }}

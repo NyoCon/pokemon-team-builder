@@ -5,6 +5,7 @@ import { TypeBadge } from '../TeamBuilder/TypeBadge'
 import { MovePicker } from '../TeamBuilder/MovePicker'
 import { PokemonPicker } from '../TeamBuilder/PokemonPicker'
 import { EVPanel } from '../TeamBuilder/EVPanel'
+import { ItemPicker } from '../TeamBuilder/ItemPicker'
 import { NATURE_BY_ID } from '../../data/natures'
 import { t } from '../../utils/i18n'
 import type { RosterEntry, EVs } from '../../types'
@@ -15,6 +16,7 @@ export const RosterPanel: React.FC = () => {
   const { roster, addToRoster, updateRosterEntry, removeFromRoster, assignFromRoster, language, advancedMode } = useTeamStore()
   const pokemonList = useCacheStore(s => s.pokemonList)
   const moveCache = useCacheStore(s => s.moveCache)
+  const itemCache = useCacheStore(s => s.itemCache)
 
   // editing state: null = not editing, string id = editing existing, 'new' = creating new
   const [editingId, setEditingId] = useState<string | 'new' | null>(null)
@@ -26,13 +28,13 @@ export const RosterPanel: React.FC = () => {
   })
 
   function openNew() {
-    setDraft({ label: '', pokemonId: 0, moveIds: [null, null, null, null], nature: undefined, evs: undefined })
+    setDraft({ label: '', pokemonId: 0, moveIds: [null, null, null, null], nature: undefined, evs: undefined, item: undefined })
     setEditingId('new')
     setAssigningId(null)
   }
 
   function openEdit(entry: RosterEntry) {
-    setDraft({ label: entry.label, pokemonId: entry.pokemonId, moveIds: [...entry.moveIds], nature: entry.nature, evs: entry.evs })
+    setDraft({ label: entry.label, pokemonId: entry.pokemonId, moveIds: [...entry.moveIds], nature: entry.nature, evs: entry.evs, item: entry.item })
     setEditingId(entry.id)
     setAssigningId(null)
   }
@@ -131,6 +133,12 @@ export const RosterPanel: React.FC = () => {
                 />
               ))}
               {advancedMode && (
+                <ItemPicker
+                  value={draft.item}
+                  onChange={slug => setDraft(d => ({ ...d, item: slug }))}
+                />
+              )}
+              {advancedMode && (
                 <EVPanel
                   language={language}
                   nature={draft.nature}
@@ -225,6 +233,19 @@ export const RosterPanel: React.FC = () => {
                     )
                   })}
                 </div>
+
+                {/* Item display */}
+                {advancedMode && entry.item && (() => {
+                  const item = itemCache[entry.item]
+                  if (!item) return null
+                  const name = item.names[language] || item.names.en
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                      {item.spriteUrl && <img src={item.spriteUrl} alt="" style={{ width: 16, height: 16, imageRendering: 'pixelated' }} />}
+                      <span style={{ fontSize: 10, color: 'var(--text-secondary)', fontFamily: "'Share Tech Mono', monospace" }}>{name}</span>
+                    </div>
+                  )
+                })()}
 
                 {/* Nature + EV summary */}
                 {advancedMode && (entry.nature || entry.evs) && (() => {

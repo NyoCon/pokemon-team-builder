@@ -7,11 +7,11 @@ import { TeamList } from './components/TeamManager/TeamList'
 import { RosterPanel } from './components/Roster/RosterPanel'
 import { useCacheStore } from './store/cacheStore'
 import { useTeamStore } from './store/teamStore'
-import { fetchAllPokemon, fetchAllTypes, fetchAllMoveIds, fetchMoveDetail } from './api/queries'
+import { fetchAllPokemon, fetchAllTypes, fetchAllMoveIds, fetchMoveDetail, fetchItemDetail } from './api/queries'
 import { readTeamFromUrl } from './utils/urlEncoding'
 
 function App() {
-  const { setPokemonList, setTypeChart, setTypeNames, setAllMoveIds, addMovesToCache, setLoading, setError } = useCacheStore()
+  const { setPokemonList, setTypeChart, setTypeNames, setAllMoveIds, addMovesToCache, addItemsToCache, setLoading, setError } = useCacheStore()
   const setActiveTeam = useTeamStore(s => s.setActiveTeam)
   const activeTeam = useTeamStore(s => s.activeTeam)
   const teams = useTeamStore(s => s.teams)
@@ -38,11 +38,15 @@ function App() {
     const teamFromUrl = readTeamFromUrl()
     if (teamFromUrl) setActiveTeam(teamFromUrl)
 
-    // Collect all move IDs referenced in persisted teams + activeTeam + roster
+    // Collect all move IDs + item slugs referenced in persisted teams + activeTeam + roster
     const allTeams = [activeTeam, ...Object.values(teams)]
     const persistedMoveIds = [...new Set([
       ...allTeams.flatMap(team => team.slots.flatMap(slot => slot.moveIds.filter(Boolean) as number[])),
       ...roster.flatMap(entry => entry.moveIds.filter(Boolean) as number[]),
+    ])]
+    const persistedItemSlugs = [...new Set([
+      ...allTeams.flatMap(team => team.slots.map(slot => slot.item).filter(Boolean) as string[]),
+      ...roster.map(entry => entry.item).filter(Boolean) as string[],
     ])]
 
     setLoading(true)
@@ -53,10 +57,14 @@ function App() {
         setTypeNames(typeNames)
         setAllMoveIds(moveIds)
         setLoading(false)
-        // Pre-fetch move details for all moves already in saved teams
+        // Pre-fetch move + item details for all already in saved teams
         if (persistedMoveIds.length) {
           Promise.all(persistedMoveIds.map(id => fetchMoveDetail(id)))
             .then(moves => addMovesToCache(moves))
+        }
+        if (persistedItemSlugs.length) {
+          Promise.all(persistedItemSlugs.map(slug => fetchItemDetail(slug)))
+            .then(items => addItemsToCache(items))
         }
       })
       .catch(err => {

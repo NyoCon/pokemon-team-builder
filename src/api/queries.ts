@@ -1,5 +1,5 @@
 import { cachedFetch, BASE } from './pokeapi'
-import type { PokemonSummary, MoveDetail, TypeChart, LocalizedName } from '../types'
+import type { PokemonSummary, MoveDetail, ItemDetail, TypeChart, LocalizedName } from '../types'
 
 const SUPPORTED_LANGS: (keyof LocalizedName)[] = ['de', 'en', 'fr', 'it', 'es']
 
@@ -169,6 +169,13 @@ export async function fetchAllMoveIds(): Promise<number[]> {
 
   try { localStorage.setItem(cacheKey, JSON.stringify(ids)) } catch { /* storage full */ }
   return ids
+}
+
+export async function fetchItemDetail(slug: string): Promise<ItemDetail> {
+  const data = await cachedFetch<any>(`poke:item:${slug}`, `${BASE}/item/${slug}`)
+  const names = extractNames(data.names)
+  const spriteUrl: string | null = data.sprites?.default ?? null
+  return { slug, names, spriteUrl }
 }
 
 export async function fetchTypeName(typeName: string): Promise<LocalizedName> {

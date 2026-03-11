@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { PokemonSummary, MoveDetail, TypeChart } from '../types'
+import type { PokemonSummary, MoveDetail, ItemDetail, TypeChart } from '../types'
 
 interface CacheStore {
   pokemonList: PokemonSummary[]
@@ -7,6 +7,7 @@ interface CacheStore {
   typeNames: Record<string, Record<string, string>>
   moveCache: Record<number, MoveDetail>
   allMoveIds: number[]
+  itemCache: Record<string, ItemDetail>
   loading: boolean
   error: string | null
 
@@ -16,6 +17,7 @@ interface CacheStore {
   addMoveToCache: (move: MoveDetail) => void
   addMovesToCache: (moves: MoveDetail[]) => void
   setAllMoveIds: (ids: number[]) => void
+  addItemsToCache: (items: ItemDetail[]) => void
   setLoading: (v: boolean) => void
   setError: (e: string | null) => void
 }
@@ -26,6 +28,7 @@ export const useCacheStore = create<CacheStore>((set) => ({
   typeNames: {},
   moveCache: {},
   allMoveIds: [],
+  itemCache: {},
   loading: false,
   error: null,
 
@@ -39,6 +42,11 @@ export const useCacheStore = create<CacheStore>((set) => ({
     return { moveCache: next }
   }),
   setAllMoveIds: (allMoveIds) => set({ allMoveIds }),
+  addItemsToCache: (items) => set(s => {
+    const next = { ...s.itemCache }
+    items.forEach(item => { next[item.slug] = item })
+    return { itemCache: next }
+  }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
 }))
